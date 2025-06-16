@@ -1,15 +1,17 @@
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "flowbite-react";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import { getLevels } from "../../Reducer/LevelSlice";
 import userRoles from "../utils/userRoles";
 import { useNavigate } from "react-router-dom";
+import AddModal from "./AddModal";
 
 const LevelList = () => {
   const { allLevels } = useSelector((state) => state?.levelsData);
+  const [openAddLevelModal, setOpenAddLevelModal] = useState(false);
   const dispatch = useDispatch();
   const currentUserRole = userRoles();
   const navigate = useNavigate();
@@ -103,7 +105,7 @@ const LevelList = () => {
     rowHeight: 60,
   };
   const handleAddLevel = () => {
-    navigate("/add-levels");
+    setOpenAddLevelModal(true);
   };
   return (
     <>
@@ -141,6 +143,12 @@ const LevelList = () => {
             </div>
           </div>
         </div>
+        {openAddLevelModal && (
+          <AddModal
+            openAddLevelModal={openAddLevelModal}
+            setOpenAddLevelModal={setOpenAddLevelModal}
+          />
+        )}
       </div>
     </>
   );

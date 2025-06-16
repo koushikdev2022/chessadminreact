@@ -18,10 +18,27 @@ export const getLevels = createAsyncThunk(
     }
 )
 
+export const addLevels = createAsyncThunk(
+    'addLevels',
+    async (user_input, { rejectWithValue }) => {
+        try {
+            const response = await api.post(`admin/level/add-level`, user_input);
+            if (response?.data?.status_code === 201) {
+                return response?.data;
+            } else {
+                return rejectWithValue(response);
+            }
+        } catch (error) {
+            return rejectWithValue(error);
+        }
+    }
+)
+
 const initialState = {
     loading: false,
     allLevels: [],
-    error: false
+    error: false,
+    addLevelData: ""
 }
 const LevelSlice = createSlice(
     {
@@ -39,6 +56,18 @@ const LevelSlice = createSlice(
                     state.error = false
                 })
                 .addCase(getLevels.rejected, (state, { payload }) => {
+                    state.loading = false
+                    state.error = payload
+                })
+                .addCase(addLevels.pending, (state) => {
+                    state.loading = true
+                })
+                .addCase(addLevels.fulfilled, (state, { payload }) => {
+                    state.loading = false
+                    state.addLevelData = payload
+                    state.error = false
+                })
+                .addCase(addLevels.rejected, (state, { payload }) => {
                     state.loading = false
                     state.error = payload
                 })
