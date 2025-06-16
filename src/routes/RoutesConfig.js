@@ -26,6 +26,7 @@ import SessionDetails from '../pages/ManageCoaches/SessionDetails.jsx';
 import AddCoach from '../pages/ManageCoaches/AddCoach.jsx';
 import CoachGeneratePassword from '../pages/ManageCoaches/CoachGeneratePassword.jsx';
 import LevelList from '../pages/Managelevel/LevelList.jsx';
+import TopicList from '../pages/ManageTopic/TopicList.jsx';
 
 
 
@@ -255,6 +256,18 @@ const allRoutes = [
       },
     ],
   },
+
+  {
+    path: '/manage-topic',
+    element: <InsideLayout />,
+    children: [
+      {
+        index: true,
+        element: <TopicList />,
+      },
+    ],
+  },
+
   {
     path: '*',
     element: 'Outside page not found',

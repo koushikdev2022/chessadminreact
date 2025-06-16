@@ -22,8 +22,9 @@ import DashBoardSlice from '../Reducer/DashBoardSlice'
 import TransactionSlice from '../Reducer/TransactionSlice';
 import PlanSlice from '../Reducer/PlanSlice';
 import WalletSlice from '../Reducer/WalletSlice';
-import CoachSlice from '../Reducer/CoachSlice'
-import LevelSlice from '../Reducer/LevelSlice'
+import CoachSlice from '../Reducer/CoachSlice';
+import LevelSlice from '../Reducer/LevelSlice';
+import TopicSlice from '../Reducer/TopicSlice';
 
 const store = configureStore({
   reducer: {
@@ -51,7 +52,8 @@ const store = configureStore({
     dash: DashBoardSlice,
     transactions: WalletSlice,
     coach: CoachSlice,
-    levelsData: LevelSlice
+    levelsData: LevelSlice,
+    topicsData: TopicSlice,
   },
   devTools: import.meta.env.DEV,
 });

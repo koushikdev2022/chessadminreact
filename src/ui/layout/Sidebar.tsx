@@ -3,11 +3,11 @@ import { NavLink, useLocation } from 'react-router-dom';
 // import Logo from '../images/logo/logo.svg';
 // import SidebarLinkGroup from './SidebarLinkGroup';
 import SidebarLinkGroup from "../layout/SidebarLinkGroup";
-import {  logo, smallLogo } from '../../assets/images/images';
+import { logo, smallLogo } from '../../assets/images/images';
 
 import { AiFillSetting, AiFillTag, AiFillTags, AiOutlineDashboard, AiOutlineLogout, AiOutlineNotification, AiOutlineUser, BiLineChart, BiLineChartDown, BsPersonWorkspace, BsViewStacked, FiHome, MdManageAccounts, MdOutlineShoppingCartCheckout, MdSpaceDashboard, MdViewStream, PiClipboardTextBold, RiCoupon2Fill, RiCouponLine, RxDashboard, TfiMenuAlt } from "../../assets/icons/index";
 import { FaCircle, FaFirstOrderAlt } from 'react-icons/fa';
-import { MdSportsKabaddi, MdFamilyRestroom, MdSchool, MdAdminPanelSettings, MdOutlineSubscriptions, MdSubscriptions } from 'react-icons/md';
+import { MdSportsKabaddi, MdFamilyRestroom, MdSchool, MdAdminPanelSettings, MdOutlineSubscriptions, MdSubscriptions, MdTopic } from 'react-icons/md';
 import userRoles from '../../pages/utils/userRoles';
 import { SiLevelsdotfyi } from "react-icons/si";
 
@@ -73,9 +73,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     setSidebarOpen(true);
   }, [])
 
-  const currentUserRole =userRoles()
-  console.log("userRole",currentUserRole);
-  
+  const currentUserRole = userRoles()
+  console.log("userRole", currentUserRole);
+
   return (
     <aside
       ref={sidebar}
@@ -156,7 +156,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 </NavLink>
               </li>
               {/* Child menu for Coach Sessions */}
-             
+
 
               <li>
                 <NavLink
@@ -218,63 +218,83 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 </NavLink>
               </li>
 
-                  {
-                    currentUserRole==='SA'&&(
-                      <>
-                       <li>
-                <NavLink
-                  to="/manage-plans"
-                  className={`group relative flex items-center gap-2 rounded-sm px-4 py-2 ${sidebarOpen ? 'justify-center' : 'justify-start'} font-normal text-sm text-gray-600 duration-300 ease-in-out hover:bg-graydark mb-2 ${pathname.includes('roles') &&
-                    'bg-graydark dark:bg-meta-4'
-                    }`}
-                >
-                  {sidebarOpen ?
-                    <>
-                      <MdSubscriptions className='text-xl' />
-                    </>
-                    :
-                    <>
-                      <MdSubscriptions  className='text-xl' />
-                      Manage Plans
-                    </>
-                  }
-                </NavLink>
-              </li>
-                      
-                      </>
-                    )
-                  }
+              {
+                currentUserRole === 'SA' && (
+                  <>
+                    <li>
+                      <NavLink
+                        to="/manage-plans"
+                        className={`group relative flex items-center gap-2 rounded-sm px-4 py-2 ${sidebarOpen ? 'justify-center' : 'justify-start'} font-normal text-sm text-gray-600 duration-300 ease-in-out hover:bg-graydark mb-2 ${pathname.includes('roles') &&
+                          'bg-graydark dark:bg-meta-4'
+                          }`}
+                      >
+                        {sidebarOpen ?
+                          <>
+                            <MdSubscriptions className='text-xl' />
+                          </>
+                          :
+                          <>
+                            <MdSubscriptions className='text-xl' />
+                            Manage Plans
+                          </>
+                        }
+                      </NavLink>
+                    </li>
+
+                  </>
+                )
+              }
 
 
-                       {
-                    currentUserRole==='SA'&&(
-                      <>
-                       <li>
-                <NavLink
-                  to="/manage-level"
-                  className={`group relative flex items-center gap-2 rounded-sm px-4 py-2 ${sidebarOpen ? 'justify-center' : 'justify-start'} font-normal text-sm text-gray-600 duration-300 ease-in-out hover:bg-graydark mb-2 ${pathname.includes('roles') &&
-                    'bg-graydark dark:bg-meta-4'
-                    }`}
-                >
-                  {sidebarOpen ?
-                    <>
-                      <SiLevelsdotfyi className='text-xl' />
-                    </>
-                    :
-                    <>
-                      <SiLevelsdotfyi  className='text-xl' />
-                      Manage Level
-                    </>
-                  }
-                </NavLink>
-              </li>
-                      
-                      </>
-                    )
-                  }
-             
+              {
+                currentUserRole === 'SA' && (
+                  <>
+                    <li>
+                      <NavLink
+                        to="/manage-level"
+                        className={`group relative flex items-center gap-2 rounded-sm px-4 py-2 ${sidebarOpen ? 'justify-center' : 'justify-start'} font-normal text-sm text-gray-600 duration-300 ease-in-out hover:bg-graydark mb-2 ${pathname.includes('roles') &&
+                          'bg-graydark dark:bg-meta-4'
+                          }`}
+                      >
+                        {sidebarOpen ?
+                          <>
+                            <SiLevelsdotfyi className='text-xl' />
+                          </>
+                          :
+                          <>
+                            <SiLevelsdotfyi className='text-xl' />
+                            Manage Level
+                          </>
+                        }
+                      </NavLink>
+                    </li>
 
-               {/* <li>
+                    <li>
+                      <NavLink
+                        to="/manage-topic"
+                        className={`group relative flex items-center gap-2 rounded-sm px-4 py-2 ${sidebarOpen ? 'justify-center' : 'justify-start'} font-normal text-sm text-gray-600 duration-300 ease-in-out hover:bg-graydark mb-2 ${pathname.includes('roles') &&
+                          'bg-graydark dark:bg-meta-4'
+                          }`}
+                      >
+                        {sidebarOpen ?
+                          <>
+                            <MdTopic className='text-xl' />
+                          </>
+                          :
+                          <>
+                            <MdTopic className='text-xl' />
+                            Manage Topic
+                          </>
+                        }
+                      </NavLink>
+                    </li>
+
+                  </>
+                )
+              }
+
+
+              {/* <li>
                 <NavLink
                   to="/plan"
                   className={`group relative flex items-center gap-2 rounded-sm py-2 px-4 ${sidebarOpen ? 'justify-center' : 'justify-start'} font-normal text-sm text-gray-600 duration-300 ease-in-out hover:bg-graydark mb-2 ${pathname.includes('plan') && 'bg-graydark dark:bg-meta-4'
