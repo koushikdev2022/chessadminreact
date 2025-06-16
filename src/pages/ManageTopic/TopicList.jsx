@@ -17,6 +17,10 @@ const TopicList = () => {
         dispatch(getTopics())
     }, [dispatch]);
 
+    const handleEditTopic = () => {
+
+    };
+
     const StatusCellRenderer = (props) => {
         const isActive = props.value === 1;
         const statusText = isActive ? "Active" : "Inactive";
@@ -30,6 +34,20 @@ const TopicList = () => {
                 >
                     {statusText}
                 </span>
+            </div>
+        );
+    };
+
+    // Edit Button Cell Renderer Component
+    const EditButtonRenderer = (props) => {
+        return (
+            <div className="flex items-center h-full">
+                <button
+                    onClick={() => handleEditTopic(props.data.id)}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                    Edit
+                </button>
             </div>
         );
     };
@@ -62,7 +80,7 @@ const TopicList = () => {
                 headerName: "Actions",
                 field: "actions",
                 width: 100,
-                // cellRenderer: EditButtonRenderer,
+                cellRenderer: EditButtonRenderer,
                 sortable: false,
                 filter: false,
                 cellClass: "flex items-center",
