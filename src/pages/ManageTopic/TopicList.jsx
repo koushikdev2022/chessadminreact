@@ -1,24 +1,30 @@
 import { AgGridReact } from "ag-grid-react";
 import { Button } from "flowbite-react";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import { getTopics } from "../../Reducer/TopicSlice";
 import { useSelector } from "react-redux";
 import userRoles from "../utils/userRoles";
+import AddTopicModal from "./AddTopicModal";
+import UpdateTopicModal from "./UpdateTopicModal";
 
 const TopicList = () => {
     const dispatch = useDispatch();
     const { allTopics } = useSelector((state) => state?.topicsData);
     console.log("allTopics", allTopics)
     const currentUserRole = userRoles();
+    const [openAddTopicModal, setOpenAddTopicModal] = useState(false);
+    const [openUpdateTopicModal, setOpenUpdateTopicModal] = useState(false);
+    const [topicId, setTopicId] = useState("");
 
     useEffect(() => {
         dispatch(getTopics())
     }, [dispatch]);
 
-    const handleEditTopic = () => {
-
+    const handleEditTopic = (id) => {
+        setTopicId(id);
+        setOpenUpdateTopicModal(true);
     };
 
     const StatusCellRenderer = (props) => {
@@ -58,6 +64,13 @@ const TopicList = () => {
             {
                 headerName: "Topics",
                 field: "topic_name",
+                flex: 1,
+                minWidth: 200,
+                cellClass: "flex items-center",
+            },
+            {
+                headerName: "Short Name",
+                field: "topic_short_name",
                 flex: 1,
                 minWidth: 200,
                 cellClass: "flex items-center",
@@ -107,7 +120,7 @@ const TopicList = () => {
     };
 
     const handleAddTopic = () => {
-
+        setOpenAddTopicModal(true);
     };
 
     return (
@@ -149,6 +162,21 @@ const TopicList = () => {
                     </div>
                 </div>
             </div>
+
+            {openAddTopicModal &&
+                <AddTopicModal
+                    openAddTopicModal={openAddTopicModal}
+                    setOpenAddTopicModal={setOpenAddTopicModal}
+                />
+            }
+
+            {openUpdateTopicModal &&
+                <UpdateTopicModal
+                    openUpdateTopicModal={openUpdateTopicModal}
+                    setOpenUpdateTopicModal={setOpenUpdateTopicModal}
+                    topicId={topicId}
+                />
+            }
         </>
     )
 };
