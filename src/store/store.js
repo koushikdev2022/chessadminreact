@@ -25,6 +25,7 @@ import WalletSlice from '../Reducer/WalletSlice';
 import CoachSlice from '../Reducer/CoachSlice';
 import LevelSlice from '../Reducer/LevelSlice';
 import TopicSlice from '../Reducer/TopicSlice';
+import ModuleSlice from '../Reducer/ModuleSlice';
 
 const store = configureStore({
   reducer: {
@@ -54,6 +55,7 @@ const store = configureStore({
     coach: CoachSlice,
     levelsData: LevelSlice,
     topicsData: TopicSlice,
+    modulesData: ModuleSlice,
   },
   devTools: import.meta.env.DEV,
 });

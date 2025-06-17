@@ -27,6 +27,7 @@ import AddCoach from '../pages/ManageCoaches/AddCoach.jsx';
 import CoachGeneratePassword from '../pages/ManageCoaches/CoachGeneratePassword.jsx';
 import LevelList from '../pages/Managelevel/LevelList.jsx';
 import TopicList from '../pages/ManageTopic/TopicList.jsx';
+import ModuleList from '../pages/ManageModule/ModuleList.jsx';
 
 
 
@@ -264,6 +265,17 @@ const allRoutes = [
       {
         index: true,
         element: <TopicList />,
+      },
+    ],
+  },
+
+  {
+    path: '/manage-module',
+    element: <InsideLayout />,
+    children: [
+      {
+        index: true,
+        element: <ModuleList />,
       },
     ],
   },
