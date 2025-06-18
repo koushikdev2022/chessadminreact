@@ -26,6 +26,7 @@ import CoachSlice from '../Reducer/CoachSlice';
 import LevelSlice from '../Reducer/LevelSlice';
 import TopicSlice from '../Reducer/TopicSlice';
 import ModuleSlice from '../Reducer/ModuleSlice';
+import PlanKeySlice from '../Reducer/PlanKeySlice';
 
 const store = configureStore({
   reducer: {
@@ -56,6 +57,7 @@ const store = configureStore({
     levelsData: LevelSlice,
     topicsData: TopicSlice,
     modulesData: ModuleSlice,
+    plankey: PlanKeySlice,
   },
   devTools: import.meta.env.DEV,
 });

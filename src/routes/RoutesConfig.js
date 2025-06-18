@@ -29,9 +29,6 @@ import LevelList from '../pages/Managelevel/LevelList.jsx';
 import TopicList from '../pages/ManageTopic/TopicList.jsx';
 import ModuleList from '../pages/ManageModule/ModuleList.jsx';
 
-
-
-
 const allRoutes = [
   {
     path: '/',
