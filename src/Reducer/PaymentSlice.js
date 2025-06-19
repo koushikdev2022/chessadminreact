@@ -32,9 +32,10 @@ const PaymentSlice = createSlice(
         initialState,
         reducers: {},
         extraReducers: (builder) => {
-            builder.addCase(getStripeSecrate.pending, (state) => {
-                state.loading = true
-            })
+            builder
+                .addCase(getStripeSecrate.pending, (state) => {
+                    state.loading = true
+                })
                 .addCase(getStripeSecrate.fulfilled, (state, { payload }) => {
                     state.stripeKey = payload
                     state.loading = false

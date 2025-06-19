@@ -27,6 +27,7 @@ import LevelSlice from '../Reducer/LevelSlice';
 import TopicSlice from '../Reducer/TopicSlice';
 import ModuleSlice from '../Reducer/ModuleSlice';
 import PlanKeySlice from '../Reducer/PlanKeySlice';
+import PaymentMethodSlice from '../Reducer/PaymentMethodSlice';
 
 const store = configureStore({
   reducer: {
@@ -58,6 +59,7 @@ const store = configureStore({
     topicsData: TopicSlice,
     modulesData: ModuleSlice,
     plankey: PlanKeySlice,
+    paymentMethod: PaymentMethodSlice,
   },
   devTools: import.meta.env.DEV,
 });

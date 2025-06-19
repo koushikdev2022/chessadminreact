@@ -28,6 +28,7 @@ import CoachGeneratePassword from '../pages/ManageCoaches/CoachGeneratePassword.
 import LevelList from '../pages/Managelevel/LevelList.jsx';
 import TopicList from '../pages/ManageTopic/TopicList.jsx';
 import ModuleList from '../pages/ManageModule/ModuleList.jsx';
+import PaymentMethodList from '../pages/PaymentMethod/PaymentMethodList.jsx';
 
 const allRoutes = [
   {
@@ -273,6 +274,17 @@ const allRoutes = [
       {
         index: true,
         element: <ModuleList />,
+      },
+    ],
+  },
+
+  {
+    path: '/payment-method',
+    element: <InsideLayout />,
+    children: [
+      {
+        index: true,
+        element: <PaymentMethodList />,
       },
     ],
   },
