@@ -9,6 +9,7 @@ import { getPaymentMethods } from "../../Reducer/PaymentMethodSlice";
 import AddPaymentMethodModal from "./AddPaymentMethodModal";
 import UpdatePaymentMethodModal from "./UpdatePaymentMethodModal";
 import MapCountryListModal from "./MapCountryListModal";
+import MapCountryAddModal from "./MapCountryAddModal";
 
 const PaymentMethodList = () => {
     const dispatch = useDispatch();
@@ -19,6 +20,7 @@ const PaymentMethodList = () => {
     const [openUpdatePaymentMethodModal, setOpenUpdatePaymentMethodModal] = useState(false);
     const [paymentMethodId, setPaymentMethodId] = useState("");
     const [openMapCountryList, setOpenMapCountryList] = useState(false);
+    const [openMapCountryAdd, setOpenMapCountryAdd] = useState(false);
 
     useEffect(() => {
         dispatch(getPaymentMethods())
@@ -32,7 +34,13 @@ const PaymentMethodList = () => {
     const handleMapCountryList = (id) => {
         setPaymentMethodId(id);
         setOpenMapCountryList(true);
-    }
+    };
+
+    const handleMapCountryAdd = (id) => {
+        setPaymentMethodId(id);
+        setOpenMapCountryAdd(true);
+    };
+
 
     const StatusCellRenderer = (props) => {
         const isActive = props.value === 1;
@@ -69,8 +77,14 @@ const PaymentMethodList = () => {
         return (
             <div className="flex items-center h-full">
                 <button
+                    onClick={() => handleMapCountryAdd(props.data.id)}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors mr-2"
+                >
+                    Add
+                </button>
+                <button
                     onClick={() => handleMapCountryList(props.data.id)}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                    className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
                 >
                     List
                 </button>
@@ -204,6 +218,14 @@ const PaymentMethodList = () => {
                 <MapCountryListModal
                     openMapCountryList={openMapCountryList}
                     setOpenMapCountryList={setOpenMapCountryList}
+                    paymentMethodId={paymentMethodId}
+                />
+            }
+
+            {openMapCountryAdd &&
+                <MapCountryAddModal
+                    openMapCountryAdd={openMapCountryAdd}
+                    setOpenMapCountryAdd={setOpenMapCountryAdd}
                     paymentMethodId={paymentMethodId}
                 />
             }

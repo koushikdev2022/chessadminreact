@@ -92,6 +92,42 @@ export const paymentMethodCountryDropdown = createAsyncThunk(
     }
 )
 
+export const paymentMethodDropdown = createAsyncThunk(
+    'paymentMethodDropdown',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await api.get('admin/payment-method/dropdown');
+            if (response?.data?.status_code === 200) {
+                return response?.data;
+            } else {
+                let errors = errorHandler(response);
+                return rejectWithValue(errors);
+            }
+        } catch (error) {
+            let errors = errorHandler(error);
+            return rejectWithValue(errors);
+        }
+    }
+)
+
+export const countryMapAdd = createAsyncThunk(
+    'countryMapAdd',
+    async (userInput, { rejectWithValue }) => {
+        try {
+            const response = await api.post('admin/payment-method/country-map/create', userInput);
+            if (response?.data?.status_code === 201) {
+                return response?.data;
+            } else {
+                let errors = errorHandler(response);
+                return rejectWithValue(errors);
+            }
+        } catch (error) {
+            let errors = errorHandler(error);
+            return rejectWithValue(errors);
+        }
+    }
+)
+
 const initialState = {
     loading: false,
     error: false,
@@ -101,7 +137,9 @@ const initialState = {
     paymentMethodDetails: {},
     updateloading: false,
     paymentMethodUpdated: {},
-    paymentMethodCountry: {},
+    paymentMethodCountry: [],
+    countries: {},
+    countryMapAdded: {},
 }
 
 const PaymentMethodSlice = createSlice(
@@ -189,6 +227,40 @@ const PaymentMethodSlice = createSlice(
                 })
                 .addCase(paymentMethodCountryDropdown.rejected, (state, { payload }) => {
                     state.loading = false;
+                    state.error = true;
+                    state.message =
+                        payload !== undefined && payload.message
+                            ? payload.message
+                            : 'Something went wrong. Try again later.';
+                })
+
+                .addCase(paymentMethodDropdown.pending, (state) => {
+                    state.loading = true
+                })
+                .addCase(paymentMethodDropdown.fulfilled, (state, { payload }) => {
+                    state.loading = false
+                    state.countries = payload
+                    state.error = false
+                })
+                .addCase(paymentMethodDropdown.rejected, (state, { payload }) => {
+                    state.loading = false;
+                    state.error = true;
+                    state.message =
+                        payload !== undefined && payload.message
+                            ? payload.message
+                            : 'Something went wrong. Try again later.';
+                })
+
+                .addCase(countryMapAdd.pending, (state) => {
+                    state.addloading = true
+                })
+                .addCase(countryMapAdd.fulfilled, (state, { payload }) => {
+                    state.addloading = false
+                    state.countryMapAdded = payload
+                    state.error = false
+                })
+                .addCase(countryMapAdd.rejected, (state, { payload }) => {
+                    state.addloading = false;
                     state.error = true;
                     state.message =
                         payload !== undefined && payload.message
