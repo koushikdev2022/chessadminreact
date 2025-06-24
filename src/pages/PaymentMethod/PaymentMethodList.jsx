@@ -10,6 +10,7 @@ import AddPaymentMethodModal from "./AddPaymentMethodModal";
 import UpdatePaymentMethodModal from "./UpdatePaymentMethodModal";
 import MapCountryListModal from "./MapCountryListModal";
 import MapCountryAddModal from "./MapCountryAddModal";
+import PaymentMethodKeyModal from "./PaymentMethodKeyModal";
 
 const PaymentMethodList = () => {
     const dispatch = useDispatch();
@@ -21,6 +22,7 @@ const PaymentMethodList = () => {
     const [paymentMethodId, setPaymentMethodId] = useState("");
     const [openMapCountryList, setOpenMapCountryList] = useState(false);
     const [openMapCountryAdd, setOpenMapCountryAdd] = useState(false);
+    const [openPaymentMethodKey, setOpenPaymentMethodKey] = useState(false);
 
     useEffect(() => {
         dispatch(getPaymentMethods())
@@ -39,6 +41,11 @@ const PaymentMethodList = () => {
     const handleMapCountryAdd = (id) => {
         setPaymentMethodId(id);
         setOpenMapCountryAdd(true);
+    };
+
+    const handlePaymentMethodKey = (id) => {
+        setPaymentMethodId(id);
+        setOpenPaymentMethodKey(true);
     };
 
 
@@ -65,9 +72,15 @@ const PaymentMethodList = () => {
             <div className="flex items-center h-full">
                 <button
                     onClick={() => handleEditPaymentMethod(props.data.id)}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors mr-2"
                 >
                     Edit
+                </button>
+                <button
+                    onClick={() => handlePaymentMethodKey(props.data.id)}
+                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                    Plan Key
                 </button>
             </div>
         );
@@ -119,7 +132,7 @@ const PaymentMethodList = () => {
             {
                 headerName: "Actions",
                 field: "actions",
-                width: 100,
+                width: 200,
                 cellRenderer: EditButtonRenderer,
                 sortable: false,
                 filter: false,
@@ -226,6 +239,14 @@ const PaymentMethodList = () => {
                 <MapCountryAddModal
                     openMapCountryAdd={openMapCountryAdd}
                     setOpenMapCountryAdd={setOpenMapCountryAdd}
+                    paymentMethodId={paymentMethodId}
+                />
+            }
+
+            {openPaymentMethodKey &&
+                <PaymentMethodKeyModal
+                    openPaymentMethodKey={openPaymentMethodKey}
+                    setOpenPaymentMethodKey={setOpenPaymentMethodKey}
                     paymentMethodId={paymentMethodId}
                 />
             }

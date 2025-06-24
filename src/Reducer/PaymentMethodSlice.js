@@ -10,12 +10,10 @@ export const getPaymentMethods = createAsyncThunk(
             if (response?.data?.status_code === 200) {
                 return response?.data;
             } else {
-                let errors = errorHandler(response);
-                return rejectWithValue(errors);
+                return rejectWithValue(response);
             }
         } catch (error) {
-            let errors = errorHandler(error);
-            return rejectWithValue(errors);
+            return rejectWithValue(error);
         }
     }
 )
@@ -28,12 +26,10 @@ export const addPaymentMethod = createAsyncThunk(
             if (response?.data?.status_code === 201) {
                 return response?.data;
             } else {
-                let errors = errorHandler(response);
-                return rejectWithValue(errors);
+                return rejectWithValue(response);
             }
         } catch (error) {
-            let errors = errorHandler(error);
-            return rejectWithValue(errors);
+            return rejectWithValue(error);
         }
     }
 )
@@ -46,12 +42,10 @@ export const paymentMethodDetail = createAsyncThunk(
             if (response?.data?.status_code === 200) {
                 return response?.data;
             } else {
-                let errors = errorHandler(response);
-                return rejectWithValue(errors);
+                return rejectWithValue(response);
             }
         } catch (error) {
-            let errors = errorHandler(error);
-            return rejectWithValue(errors);
+            return rejectWithValue(error);
         }
     }
 )
@@ -64,12 +58,10 @@ export const updatePaymentMethod = createAsyncThunk(
             if (response?.data?.status_code === 200) {
                 return response?.data;
             } else {
-                let errors = errorHandler(response);
-                return rejectWithValue(errors);
+                return rejectWithValue(response);
             }
         } catch (error) {
-            let errors = errorHandler(error);
-            return rejectWithValue(errors);
+            return rejectWithValue(error);
         }
     }
 )
@@ -82,12 +74,10 @@ export const paymentMethodCountryDropdown = createAsyncThunk(
             if (response?.data?.status_code === 200) {
                 return response?.data;
             } else {
-                let errors = errorHandler(response);
-                return rejectWithValue(errors);
+                return rejectWithValue(response);
             }
         } catch (error) {
-            let errors = errorHandler(error);
-            return rejectWithValue(errors);
+            return rejectWithValue(error);
         }
     }
 )
@@ -100,12 +90,10 @@ export const paymentMethodDropdown = createAsyncThunk(
             if (response?.data?.status_code === 200) {
                 return response?.data;
             } else {
-                let errors = errorHandler(response);
-                return rejectWithValue(errors);
+                return rejectWithValue(response);
             }
         } catch (error) {
-            let errors = errorHandler(error);
-            return rejectWithValue(errors);
+            return rejectWithValue(error);
         }
     }
 )
@@ -118,12 +106,42 @@ export const countryMapAdd = createAsyncThunk(
             if (response?.data?.status_code === 201) {
                 return response?.data;
             } else {
-                let errors = errorHandler(response);
-                return rejectWithValue(errors);
+                return rejectWithValue(response);
             }
         } catch (error) {
-            let errors = errorHandler(error);
-            return rejectWithValue(errors);
+            return rejectWithValue(error);
+        }
+    }
+)
+
+export const getPaymentMethodKeys = createAsyncThunk(
+    'getPaymentMethodKeys',
+    async (input, { rejectWithValue }) => {
+        try {
+            const response = await api.get(`admin/payment-method-key/list/${input}`);
+            if (response?.data?.status_code === 200) {
+                return response?.data;
+            } else {
+                return rejectWithValue(response);
+            }
+        } catch (error) {
+            return rejectWithValue(error);
+        }
+    }
+)
+
+export const updatePaymentMethodKey = createAsyncThunk(
+    'updatePaymentMethodKey',
+    async (userInput, { rejectWithValue }) => {
+        try {
+            const response = await api.post('admin/payment-method-key/add', userInput);
+            if (response?.data?.status_code === 200 || response?.data?.status_code === 201) {
+                return response?.data;
+            } else {
+                return rejectWithValue(response);
+            }
+        } catch (error) {
+            return rejectWithValue(error);
         }
     }
 )
@@ -140,6 +158,9 @@ const initialState = {
     paymentMethodCountry: [],
     countries: {},
     countryMapAdded: {},
+    paymentMethodKeys: {},
+    paymentMethodKeyUpdated: {},
+
 }
 
 const PaymentMethodSlice = createSlice(
@@ -261,6 +282,40 @@ const PaymentMethodSlice = createSlice(
                 })
                 .addCase(countryMapAdd.rejected, (state, { payload }) => {
                     state.addloading = false;
+                    state.error = true;
+                    state.message =
+                        payload !== undefined && payload.message
+                            ? payload.message
+                            : 'Something went wrong. Try again later.';
+                })
+
+                .addCase(getPaymentMethodKeys.pending, (state) => {
+                    state.loading = true
+                })
+                .addCase(getPaymentMethodKeys.fulfilled, (state, { payload }) => {
+                    state.loading = false
+                    state.paymentMethodKeys = payload
+                    state.error = false
+                })
+                .addCase(getPaymentMethodKeys.rejected, (state, { payload }) => {
+                    state.loading = false;
+                    state.error = true;
+                    state.message =
+                        payload !== undefined && payload.message
+                            ? payload.message
+                            : 'Something went wrong. Try again later.';
+                })
+
+                .addCase(updatePaymentMethodKey.pending, (state) => {
+                    state.updateloading = true
+                })
+                .addCase(updatePaymentMethodKey.fulfilled, (state, { payload }) => {
+                    state.updateloading = false
+                    state.paymentMethodKeyUpdated = payload
+                    state.error = false
+                })
+                .addCase(updatePaymentMethodKey.rejected, (state, { payload }) => {
+                    state.updateloading = false;
                     state.error = true;
                     state.message =
                         payload !== undefined && payload.message

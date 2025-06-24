@@ -1,12 +1,12 @@
+import { Button, Label, Modal, TextInput } from "flowbite-react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { getPaymentMethods, paymentMethodDetail, updatePaymentMethod } from "../../Reducer/PaymentMethodSlice";
 import { toast } from "react-toastify";
-import { Button, Label, Modal, TextInput } from "flowbite-react";
-import { useEffect } from "react";
+import { getPaymentMethodKeys, getPaymentMethods, updatePaymentMethodKey } from "../../Reducer/PaymentMethodSlice";
 
-const UpdatePaymentMethodModal = ({ openUpdatePaymentMethodModal, setOpenUpdatePaymentMethodModal, paymentMethodId }) => {
+const PaymentMethodKeyModal = ({ openPaymentMethodKey, setOpenPaymentMethodKey, paymentMethodId }) => {
     console.log("paymentMethodId", paymentMethodId)
     const dispatch = useDispatch();
     const { updateloading } = useSelector((state) => state?.paymentMethod);
@@ -19,20 +19,21 @@ const UpdatePaymentMethodModal = ({ openUpdatePaymentMethodModal, setOpenUpdateP
     } = useForm();
 
     useEffect(() => {
-        dispatch(paymentMethodDetail({ payment_method_id: paymentMethodId })).then((res) => {
-            console.log("payment method details res", res)
+        dispatch(getPaymentMethodKeys(paymentMethodId)).then((res) => {
+            console.log("payment method keys res", res)
             if (res?.payload?.status_code === 200) {
-                setValue("name", res?.payload?.data?.name);
-                setValue("short_name", res?.payload?.data?.short_name);
+                setValue("public_key", res?.payload?.data?.public_key);
+                setValue("private_key", res?.payload?.data?.private_key);
+                setValue("additional_key", res?.payload?.data?.additional_key);
             }
         })
     }, [dispatch, paymentMethodId, setValue]);
 
     const onSubmit = (data) => {
         console.log("Data:", data);
-        dispatch(updatePaymentMethod({ ...data, payment_method_id: paymentMethodId })).then((res) => {
-            console.log("update payment method res", res);
-            if (res?.payload?.status_code === 200) {
+        dispatch(updatePaymentMethodKey({ ...data, payment_id: paymentMethodId })).then((res) => {
+            console.log("update payment method key res", res);
+            if (res?.payload?.status_code === 200 || res?.payload?.status_code === 201) {
                 toast.success(res?.payload?.message, {
                     position: "top-right",
                     autoClose: 5000,
@@ -42,7 +43,7 @@ const UpdatePaymentMethodModal = ({ openUpdatePaymentMethodModal, setOpenUpdateP
                     theme: "light",
                 });
                 dispatch(getPaymentMethods());
-                setOpenUpdatePaymentMethodModal(false);
+                setOpenPaymentMethodKey(false);
             } else {
                 toast.error(res?.payload?.response?.data?.data?.[0]?.message, {
                     position: "top-right",
@@ -59,34 +60,40 @@ const UpdatePaymentMethodModal = ({ openUpdatePaymentMethodModal, setOpenUpdateP
 
     return (
         <>
-            <Modal show={openUpdatePaymentMethodModal} onClose={() => setOpenUpdatePaymentMethodModal(false)}>
-                <Modal.Header>Update This Payment Method</Modal.Header>
+            <Modal show={openPaymentMethodKey} onClose={() => setOpenPaymentMethodKey(false)}>
+                <Modal.Header>Payment Method Keys</Modal.Header>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <Modal.Body>
                         <div className="space-y-4 max-w-full md:max-w-lg mx-auto px-2 sm:px-4">
                             <div>
-                                <Label htmlFor="name" value="Payment Method Name" />
+                                <Label htmlFor="public_key" value="Public Key" />
                                 <TextInput
-                                    id="name"
-                                    {...register("name", { required: "Payment Method Name is required" })}
+                                    id="public_key"
+                                    {...register("public_key", { required: "Public Key is required" })}
                                 />
-                                {errors?.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
+                                {errors?.public_key && <p className="text-red-500 text-sm">{errors.public_key.message}</p>}
                             </div>
                             <div>
-                                <Label htmlFor="short_name" value="Payment Method Short Name" />
+                                <Label htmlFor="private_key" value="Private Key" />
                                 <TextInput
-                                    id="short_name"
-                                    {...register("short_name", { required: "Payment Method Short Name is required" })}
+                                    id="private_key"
+                                    {...register("private_key", { required: "Private Key is required" })}
                                 />
-                                {errors?.short_name && (
-                                    <p className="text-red-500 text-sm">{errors.short_name.message}</p>
-                                )}
+                                {errors?.private_key && <p className="text-red-500 text-sm">{errors.private_key.message}</p>}
+                            </div>
+                            <div>
+                                <Label htmlFor="additional_key" value="Additional Key" />
+                                <TextInput
+                                    id="additional_key"
+                                    {...register("additional_key", { required: "Additional Key is required" })}
+                                />
+                                {errors?.additional_key && <p className="text-red-500 text-sm">{errors.additional_key.message}</p>}
                             </div>
                         </div>
                     </Modal.Body>
                     <Modal.Footer className="flex flex-col sm:flex-row sm:justify-end gap-2">
                         <Button
-                            onClick={() => setOpenUpdatePaymentMethodModal(false)}
+                            onClick={() => setOpenPaymentMethodKey(false)}
                             type="button"
                             className="w-full sm:w-auto bg-red-700 hover:bg-red-800 text-white"
                         >
@@ -105,4 +112,4 @@ const UpdatePaymentMethodModal = ({ openUpdatePaymentMethodModal, setOpenUpdateP
     )
 };
 
-export default UpdatePaymentMethodModal;
+export default PaymentMethodKeyModal;
