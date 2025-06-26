@@ -21,7 +21,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { CiCirclePlus } from "react-icons/ci";
 import { AiOutlineMinusCircle } from "react-icons/ai";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 
 const AddCoach = () => {
   const { coachCountryData, rmData, levelData, daysData } = useSelector(
@@ -49,6 +49,10 @@ const AddCoach = () => {
     { day: "", startTime: "", endTime: "" },
   ]);
 
+  const [breaks, setBreaks] = useState([
+    { day: "", startTime: "", endTime: "" },
+  ]);
+
   const handleAddShift = () => {
     setShifts([...shifts, { day: "", startTime: "", endTime: "" }]);
   };
@@ -63,6 +67,21 @@ const AddCoach = () => {
     const updatedShifts = [...shifts];
     updatedShifts[index][field] = value;
     setShifts(updatedShifts);
+  };
+  const handleBreakChange = (index, field, value) => {
+    const updated = [...breaks];
+    updated[index][field] = value;
+    setBreaks(updated);
+  };
+
+  const handleAddBreak = () => {
+    setBreaks([...breaks, { day: "", startTime: "", endTime: "" }]);
+  };
+
+  const handleRemoveBreak = (index) => {
+    const updated = [...breaks];
+    updated.splice(index, 1);
+    setBreaks(updated);
   };
   const {
     register,
@@ -131,11 +150,31 @@ const AddCoach = () => {
       if (res?.payload?.status_code === 201) {
         toast.success(res?.payload?.message);
         nevigate("/manage-coaches");
+      } else if (res?.payload?.response?.data?.status_code === 422) {
+        const errors = res?.payload?.response?.data?.errors;
+
+        if (Array.isArray(errors)) {
+          toast.error(
+            <div>
+              <strong>Shift timing conflicts:</strong>
+              <ul className="list-disc pl-5">
+                {errors.map((err, index) => (
+                  <li key={index}>
+                    <strong>{err.day_name}:</strong> {err.overlapping_slot}{" "}
+                    overlapping with {err.overlapped_with}
+                  </li>
+                ))}
+              </ul>
+            </div>,
+            { autoClose: false } // Optional: Keeps the toast open for user to read
+          );
+        }
       }
     });
   };
   return (
     <>
+      <ToastContainer />
       <div className="mb-4 ml-0 bg-white">
         <h2 className="text-2xl font-semibold p-6">Coach Details</h2>
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -367,17 +406,17 @@ const AddCoach = () => {
               </div>
 
               {/* Break Time */}
-              <div className="mb-8">
+              {/* <div className="mb-8">
                 <div className="flex justify-between">
                   <h2 className="text-2xl font-semibold py-6">Break Timing</h2>
                   <div>
-                    {/* <Button
+                    <Button
                       className=" px-6 py-2 text-black text-base font-semibold flex justify-center items-center "
                       title="add more"
                       onClick={handleAddShift}
                     >
                       <CiCirclePlus size={30} />
-                    </Button> */}
+                    </Button>
                   </div>
                 </div>
 
@@ -442,6 +481,99 @@ const AddCoach = () => {
                           type="button"
                           className="absolute top-8 right-2 text-red-600"
                           onClick={() => handleRemoveShift(index)}
+                        >
+                          <AiOutlineMinusCircle size={24} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div> */}
+
+              <div className="mb-8">
+                <div className="flex justify-between">
+                  <h2 className="text-2xl font-semibold py-6">Break Timing</h2>
+                  <div>
+                    <Button
+                      className="px-6 py-2 text-black text-base font-semibold flex justify-center items-center"
+                      title="add break"
+                      onClick={handleAddBreak}
+                    >
+                      <CiCirclePlus size={30} />
+                    </Button>
+                  </div>
+                </div>
+
+                {breaks.map((brk, index) => (
+                  <div
+                    key={index}
+                    className="flex justify-between items-center mb-4 gap-4"
+                  >
+                    <div className="w-4/12">
+                      <div className="mb-2 block">
+                        <Label
+                          htmlFor={`break-day-${index}`}
+                          value="Select Days"
+                        />
+                      </div>
+                      <Select
+                        id={`break-day-${index}`}
+                        value={brk.day}
+                        onChange={(e) =>
+                          handleBreakChange(index, "day", e.target.value)
+                        }
+                      >
+                        <option value="">Select days</option>
+                        {daysData?.results?.map((days) => (
+                          <option key={days?.id} value={days?.id}>
+                            {days?.day}
+                          </option>
+                        ))}
+                      </Select>
+                    </div>
+
+                    <div className="w-4/12">
+                      <div className="mb-2 block">
+                        <Label
+                          htmlFor={`break-start-${index}`}
+                          value="Start Time"
+                        />
+                      </div>
+                      <TextInput
+                        id={`break-start-${index}`}
+                        type="text"
+                        placeholder="Enter Start Time"
+                        value={brk.startTime}
+                        onChange={(e) =>
+                          handleBreakChange(index, "startTime", e.target.value)
+                        }
+                        required
+                      />
+                    </div>
+
+                    <div className="w-4/12 relative">
+                      <div className="mb-2 block">
+                        <Label
+                          htmlFor={`break-end-${index}`}
+                          value="End Time"
+                        />
+                      </div>
+                      <TextInput
+                        id={`break-end-${index}`}
+                        type="text"
+                        placeholder="Enter End Time"
+                        value={brk.endTime}
+                        onChange={(e) =>
+                          handleBreakChange(index, "endTime", e.target.value)
+                        }
+                        required
+                      />
+
+                      {breaks.length > 1 && (
+                        <button
+                          type="button"
+                          className="absolute top-8 right-2 text-red-600"
+                          onClick={() => handleRemoveBreak(index)}
                         >
                           <AiOutlineMinusCircle size={24} />
                         </button>
