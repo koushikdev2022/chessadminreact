@@ -12,6 +12,8 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import {
   addCoach,
+  checkCoachBreakTimeDiff,
+  checkCoachTimes,
   getCounrtyForCoach,
   getDays,
   getLevel,
@@ -24,16 +26,20 @@ import { AiOutlineMinusCircle } from "react-icons/ai";
 import { toast, ToastContainer } from "react-toastify";
 
 const AddCoach = () => {
+  const dispatch = useDispatch();
+  const nevigate = useNavigate();
+  const baseUrl = window.location.origin;
   const { coachCountryData, rmData, levelData, daysData } = useSelector(
     (state) => state?.coach
   );
-  const dispatch = useDispatch();
+
   useEffect(() => {
     dispatch(getCounrtyForCoach());
     dispatch(getRMForCoach());
     dispatch(getLevel());
     dispatch(getDays());
   }, []);
+
   const countryDocuments = {
     IN: ["Aadhar", "PAN", "Voter ID", "Driving License"],
     US: ["SSN", "Passport", "Driver License", "Green Card"],
@@ -43,8 +49,7 @@ const AddCoach = () => {
   const [documentType, setDocumentType] = useState("");
   const [documentFile, setDocumentFile] = useState(null);
   const [certificateFiles, setCertificateFiles] = useState([]);
-  const nevigate = useNavigate();
-  const baseUrl = window.location.origin;
+
   const [shifts, setShifts] = useState([
     { day: "", startTime: "", endTime: "" },
   ]);
@@ -52,6 +57,7 @@ const AddCoach = () => {
   const [breaks, setBreaks] = useState([
     { day: "", startTime: "", endTime: "" },
   ]);
+  console.log("breaks", breaks);
 
   const handleAddShift = () => {
     setShifts([...shifts, { day: "", startTime: "", endTime: "" }]);
@@ -68,10 +74,37 @@ const AddCoach = () => {
     updatedShifts[index][field] = value;
     setShifts(updatedShifts);
   };
-  const handleBreakChange = (index, field, value) => {
+
+  // const handleBreakChange = (index, field, value) => {
+  //   const updated = [...breaks];
+  //   updated[index][field] = value;
+  //   setBreaks(updated);
+  // };
+
+  const handleBreakChange = async (index, field, value) => {
     const updated = [...breaks];
     updated[index][field] = value;
+
+    const { startTime, endTime } = updated[index];
+
     setBreaks(updated);
+
+    const newStartTime = field === "startTime" ? value : startTime;
+    const newEndTime = field === "endTime" ? value : endTime;
+
+    if (newStartTime && newEndTime) {
+      dispatch(checkCoachBreakTimeDiff({ start_time: newStartTime, end_time: newEndTime })).then((res) => {
+        console.log("check break time res", res)
+        if (res?.payload?.status_code === 200) {
+          setBreaks(updated);
+        } else {
+          toast.error(res?.payload?.response?.data?.message);
+          const rollback = [...breaks];
+          rollback[index][field] = "";
+          setBreaks(rollback);
+        }
+      })
+    }
   };
 
   const handleAddBreak = () => {
@@ -83,12 +116,14 @@ const AddCoach = () => {
     updated.splice(index, 1);
     setBreaks(updated);
   };
+
   const {
     register,
     handleSubmit,
     setValue,
     formState: { errors },
   } = useForm();
+
   const handleCancel = () => {
     nevigate("/manage-coaches");
   };
@@ -108,10 +143,12 @@ const AddCoach = () => {
     }
     setCertificateFiles(files);
   };
+
   const handleDocumentTypeChange = (e) => {
     const selectedDocType = e.target.value;
     setDocumentType(selectedDocType);
   };
+
   const onSubmit = async (data) => {
     const formData = new FormData();
 
@@ -139,39 +176,102 @@ const AddCoach = () => {
     }));
     formData.append("shift_timings", JSON.stringify(formattedShifts));
 
+    // Break timings
+    const formattedBreaks = breaks.map((brk) => ({
+      day_id: Number(brk.day),
+      start_time: brk.startTime,
+      end_time: brk.endTime,
+    }));
+    formData.append("break_timings", JSON.stringify(formattedBreaks));
+
     // Files
     if (documentFile) formData.append("document_file", documentFile);
 
     certificateFiles.forEach((file) => {
       formData.append("certificate_files", file);
     });
-    dispatch(addCoach(formData)).then((res) => {
-      console.log("Res", res);
-      if (res?.payload?.status_code === 201) {
-        toast.success(res?.payload?.message);
-        nevigate("/manage-coaches");
-      } else if (res?.payload?.response?.data?.status_code === 422) {
-        const errors = res?.payload?.response?.data?.errors;
 
-        if (Array.isArray(errors)) {
-          toast.error(
-            <div>
-              <strong>Shift timing conflicts:</strong>
-              <ul className="list-disc pl-5">
-                {errors.map((err, index) => (
-                  <li key={index}>
-                    <strong>{err.day_name}:</strong> {err.overlapping_slot}{" "}
-                    overlapping with {err.overlapped_with}
-                  </li>
-                ))}
-              </ul>
-            </div>,
-            { autoClose: false } // Optional: Keeps the toast open for user to read
-          );
-        }
+    dispatch(checkCoachTimes({ shift_timings: formattedShifts, break_timings: formattedBreaks })).then((res) => {
+      console.log("check coach time", res)
+      const data = res?.payload?.res;
+
+      if (!Array.isArray(data)) {
+        toast.error("Invalid response format");
+        return;
       }
-    });
+
+      const invalidItems = data.filter(item => item.isValid === false);
+      if (invalidItems.length > 0) {
+        const errorMessages = invalidItems.map(item => {
+          const breakInfo = `Break on ${item.break.day} (${item.break.start_time} - ${item.break.end_time})`;
+          const shiftInfo = item.shifts.map(shift =>
+            `Shift on ${shift.day} (${shift.start_time} - ${shift.end_time})`
+          ).join(", ");
+          return `${breakInfo} conflicts with ${shiftInfo}`;
+        });
+
+        toast.error("Invalid Timings:\n" + errorMessages.join("\n"), { autoClose: false });
+      } else {
+        dispatch(addCoach(formData)).then((res) => {
+          console.log("Res", res);
+          if (res?.payload?.status_code === 201) {
+            toast.success(res?.payload?.message);
+            nevigate("/manage-coaches");
+          } else if (res?.payload?.response?.data?.status_code === 422) {
+            const errors = res?.payload?.response?.data?.errors;
+
+            if (Array.isArray(errors)) {
+              toast.error(
+                <div>
+                  <strong>Shift timing conflicts:</strong>
+                  <ul className="list-disc pl-5">
+                    {errors.map((err, index) => (
+                      <li key={index}>
+                        <strong>{err.day_name}:</strong> {err.overlapping_slot}{" "}
+                        overlapping with {err.overlapped_with}
+                      </li>
+                    ))}
+                  </ul>
+                </div>,
+                { autoClose: false }
+              );
+            }
+          } else (
+            toast.error(res?.payload?.response?.data?.message)
+          )
+        });
+      }
+
+    })
+
+    // dispatch(addCoach(formData)).then((res) => {
+    //   console.log("Res", res);
+    //   if (res?.payload?.status_code === 201) {
+    //     toast.success(res?.payload?.message);
+    //     nevigate("/manage-coaches");
+    //   } else if (res?.payload?.response?.data?.status_code === 422) {
+    //     const errors = res?.payload?.response?.data?.errors;
+
+    //     if (Array.isArray(errors)) {
+    //       toast.error(
+    //         <div>
+    //           <strong>Shift timing conflicts:</strong>
+    //           <ul className="list-disc pl-5">
+    //             {errors.map((err, index) => (
+    //               <li key={index}>
+    //                 <strong>{err.day_name}:</strong> {err.overlapping_slot}{" "}
+    //                 overlapping with {err.overlapped_with}
+    //               </li>
+    //             ))}
+    //           </ul>
+    //         </div>,
+    //         { autoClose: false }
+    //       );
+    //     }
+    //   }
+    // });
   };
+
   return (
     <>
       <ToastContainer />

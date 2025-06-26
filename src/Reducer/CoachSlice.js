@@ -125,6 +125,38 @@ export const getCoachListOperationalHead = createAsyncThunk(
     }
 )
 
+export const checkCoachBreakTimeDiff = createAsyncThunk(
+    'checkCoachBreakTimeDiff',
+    async (input, { rejectWithValue }) => {
+        try {
+            const response = await api.post(`/operation-head/coach/check-break-time-difference`, input);
+            if (response?.data?.status_code === 200) {
+                return response?.data;
+            } else {
+                return rejectWithValue(response);
+            }
+        } catch (error) {
+            return rejectWithValue(error);
+        }
+    }
+)
+
+export const checkCoachTimes = createAsyncThunk(
+    'checkCoachTimes',
+    async (input, { rejectWithValue }) => {
+        try {
+            const response = await api.post(`/operation-head/coach/check-coach-times`, input);
+            if (response?.data?.status_code === 200) {
+                return response?.data;
+            } else {
+                return rejectWithValue(response);
+            }
+        } catch (error) {
+            return rejectWithValue(error);
+        }
+    }
+)
+
 
 const initialState = {
     loading: false,
@@ -136,7 +168,9 @@ const initialState = {
     addCoachData: "",
     allCoach: [],
     genPass: "",
-    getCoachOHData: []
+    getCoachOHData: [],
+    coachBreakTimeDiff: {},
+    coachTimes: {},
 }
 const CoachSlice = createSlice(
     {
@@ -239,6 +273,32 @@ const CoachSlice = createSlice(
                     state.error = false
                 })
                 .addCase(getCoachListOperationalHead.rejected, (state, { payload }) => {
+                    state.loading = false
+                    state.error = payload
+                })
+
+                .addCase(checkCoachBreakTimeDiff.pending, (state) => {
+                    state.loading = true
+                })
+                .addCase(checkCoachBreakTimeDiff.fulfilled, (state, { payload }) => {
+                    state.loading = false
+                    state.coachBreakTimeDiff = payload
+                    state.error = false
+                })
+                .addCase(checkCoachBreakTimeDiff.rejected, (state, { payload }) => {
+                    state.loading = false
+                    state.error = payload
+                })
+
+                .addCase(checkCoachTimes.pending, (state) => {
+                    state.loading = true
+                })
+                .addCase(checkCoachTimes.fulfilled, (state, { payload }) => {
+                    state.loading = false
+                    state.coachTimes = payload
+                    state.error = false
+                })
+                .addCase(checkCoachTimes.rejected, (state, { payload }) => {
                     state.loading = false
                     state.error = payload
                 })
