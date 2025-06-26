@@ -19,12 +19,12 @@ const PaymentMethodKeyModal = ({ openPaymentMethodKey, setOpenPaymentMethodKey, 
     } = useForm();
 
     useEffect(() => {
-        dispatch(getPaymentMethodKeys(paymentMethodId)).then((res) => {
+        dispatch(getPaymentMethodKeys({ id: paymentMethodId })).then((res) => {
             console.log("payment method keys res", res)
             if (res?.payload?.status_code === 200) {
-                setValue("public_key", res?.payload?.data?.public_key);
-                setValue("private_key", res?.payload?.data?.private_key);
-                setValue("additional_key", res?.payload?.data?.additional_key);
+                setValue("public_key", res?.payload?.data?.[0]?.public_key);
+                setValue("private_key", res?.payload?.data?.[0]?.private_key);
+                setValue("additional_key", res?.payload?.data?.[0]?.aditional_key);
             }
         })
     }, [dispatch, paymentMethodId, setValue]);

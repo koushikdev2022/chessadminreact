@@ -118,7 +118,7 @@ export const getPaymentMethodKeys = createAsyncThunk(
     'getPaymentMethodKeys',
     async (input, { rejectWithValue }) => {
         try {
-            const response = await api.get(`admin/payment-method-key/list/${input}`);
+            const response = await api.post(`admin/payment-method-key/list`, input);
             if (response?.data?.status_code === 200) {
                 return response?.data;
             } else {
