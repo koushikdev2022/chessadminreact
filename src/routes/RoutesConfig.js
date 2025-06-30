@@ -29,6 +29,7 @@ import LevelList from '../pages/Managelevel/LevelList.jsx';
 import TopicList from '../pages/ManageTopic/TopicList.jsx';
 import ModuleList from '../pages/ManageModule/ModuleList.jsx';
 import PaymentMethodList from '../pages/PaymentMethod/PaymentMethodList.jsx';
+import AddCourse from '../pages/ManageCourses/AddCourse.jsx';
 
 const allRoutes = [
   {
@@ -185,6 +186,7 @@ const allRoutes = [
       },
     ],
   },
+
   {
     path: '/manage-courses',
     element: <InsideLayout />,
@@ -195,6 +197,17 @@ const allRoutes = [
       },
     ],
   },
+  {
+    path: '/add-course',
+    element: <InsideLayout />,
+    children: [
+      {
+        index: true,
+        element: <AddCourse />,
+      },
+    ],
+  },
+
   {
     path: '/manage-coaches',
     element: <InsideLayout />,

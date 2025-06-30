@@ -4,9 +4,11 @@ import { ToastContainer } from 'react-toastify';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
+import { useNavigate } from "react-router-dom";
 
 const ManageCourses = () => {
-  const [openModal, setOpenModal] = useState(false);
+  // const [openModal, setOpenModal] = useState(false);
+  const navigate = useNavigate();
 
   const [rowData] = useState([
     {
@@ -35,6 +37,10 @@ const ManageCourses = () => {
     }
   ]);
 
+  const handleAddCourse = () => {
+    navigate('/add-course')
+  };
+
   return (
     <div>
       <ToastContainer />
@@ -42,8 +48,8 @@ const ManageCourses = () => {
         <div className="h-full lg:h-screen">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-semibold">Course Details</h2>
-            <Button 
-              onClick={() => setOpenModal(true)}
+            <Button
+              onClick={() => handleAddCourse()}
               className="bg-[#AB54DB] hover:bg-black px-6 py-2 text-white text-base font-semibold flex justify-center items-center rounded-md"
             >
               Add Course
@@ -61,7 +67,7 @@ const ManageCourses = () => {
         </div>
       </div>
 
-      <Modal show={openModal} onClose={() => setOpenModal(false)}>
+      {/* <Modal show={openModal} onClose={() => setOpenModal(false)}>
         <Modal.Header>Add New Course</Modal.Header>
         <Modal.Body>
           <div className="space-y-4">
@@ -101,7 +107,7 @@ const ManageCourses = () => {
           <Button onClick={() => setOpenModal(false)}>Cancel</Button>
           <Button color="success">Add Course</Button>
         </Modal.Footer>
-      </Modal>
+      </Modal> */}
     </div>
   );
 };
