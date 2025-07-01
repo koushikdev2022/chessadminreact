@@ -8,7 +8,7 @@ import { addCourseStep1, courseLevelDropdown, courseTagsDropdown } from "../../R
 import { useSelector } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 
-const AddCourseStep1 = ({ onNext, setLevelId }) => {
+const AddCourseStep1 = ({ onNext, setLevelId, setCourseId }) => {
     const dispatch = useDispatch();
     const [learningOutcomes, setLearningOutcomes] = useState(["", ""]);
     const [file, setFile] = useState(null);
@@ -100,6 +100,7 @@ const AddCourseStep1 = ({ onNext, setLevelId }) => {
             if (res?.payload?.status_code === 201) {
                 // setNextStepData({"course_level_id":res?.payload?.level_id})
                 setLevelId(res?.payload?.level_id)
+                setCourseId(res?.payload?.course_id)
                 toast.success(res?.payload?.message);
                 onNext();
             } else {

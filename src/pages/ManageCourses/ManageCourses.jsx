@@ -1,38 +1,68 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Button, TextInput, Label } from "flowbite-react";
 import { ToastContainer } from 'react-toastify';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { getAllCourse } from "../../Reducer/CourseSlice";
+import { useSelector } from "react-redux";
+import { MdDeleteForever, MdEditNote } from "react-icons/md";
+import { FaRegEdit } from "react-icons/fa";
 
 const ManageCourses = () => {
   // const [openModal, setOpenModal] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch()
+  const { loading, allCourseData } = useSelector((state) => state?.courses);
 
-  const [rowData] = useState([
-    {
-      name: 'Sample Course',
-      phone: '+1234567890',
-      email: 'course@example.com',
-      address: '123 Course Street',
-      country: 'United States'
-    }
-  ]);
+  const [courseId, setCourseId] = useState();
+
+  useEffect(() => {
+    dispatch(getAllCourse()).then((res) => {
+      setCourseId(res)
+      console.log('res', res)
+    })
+  }, [])
+  // console.log("allCourseData",allCourseData)
+
+  const handleDelete = () => {
+    console.log("delete")
+  }
+  const handleEdit = () => {
+    console.log("edit")
+  }
+  const handleCourseDetails = () => {
+    navigate('/course-details')
+  }
 
   const [columnDefs] = useState([
-    { field: 'name', headerName: 'Name', sortable: true, filter: true },
-    { field: 'phone', headerName: 'Phone No', sortable: true, filter: true },
-    { field: 'email', headerName: 'Email', sortable: true, filter: true },
-    { field: 'address', headerName: 'Physical Address', sortable: true, filter: true },
-    { field: 'country', headerName: 'Country', sortable: true, filter: true },
+    { field: 'title', headerName: 'Course Title', sortable: true, filter: true },
+    { field: 'sub_title', headerName: 'Course Subtitle', sortable: true, filter: true },
+    { field: 'course_level_id', headerName: 'Course Level', sortable: true, filter: true },
+    { field: 'duration_integer', headerName: 'Course Duration', sortable: true, filter: true },
+
     {
-      headerName: 'Students',
-      field: 'students',
+      headerName: 'Action',
+      field: 'Action',
       cellRenderer: () => (
-        <Button size="sm" color="success">
-          View Students
-        </Button>
+        <div className="flex justify-start items-center h-full gap-2">
+          <FaRegEdit className="text-green-800 text-xl text-center cursor-pointer" onClick={handleEdit} />
+          <MdDeleteForever className="text-red-700 text-xl text-center cursor-pointer" onClick={handleDelete} />
+
+        </div>
+      )
+    },
+    {
+      headerName: 'Details',
+      field: 'Details',
+      cellRenderer: () => (
+        <div className="flex justify-start items-center h-full">
+          <Button size="sm" color="success" onClick={handleCourseDetails}>
+            Details
+          </Button>
+        </div>
       )
     }
   ]);
@@ -55,15 +85,21 @@ const ManageCourses = () => {
               Add Course
             </Button>
           </div>
-          <div className="ag-theme-alpine" style={{ height: 600, width: '100%' }}>
-            <AgGridReact
-              rowData={rowData}
-              columnDefs={columnDefs}
-              pagination={true}
-              paginationPageSize={10}
-              domLayout='autoHeight'
-            />
-          </div>
+          {
+            allCourseData &&
+            <div className="ag-theme-alpine" style={{ height: 600, width: '100%' }}>
+              {loading ? "Loading..." :
+                <AgGridReact
+                  rowData={allCourseData}
+                  columnDefs={columnDefs}
+                  pagination={true}
+                  paginationPageSize={10}
+                  domLayout='autoHeight'
+                />
+              }
+            </div>
+
+          }
         </div>
       </div>
 

@@ -84,7 +84,7 @@ export const addCourseStep2 = createAsyncThunk(
     'addCourseStep2',
     async (input, { rejectWithValue }) => {
         try {
-            const response = await api.post(`/admin/course/add-course-step-one`, input);
+            const response = await api.post(`/admin/course/add-course-step-two`, input);
             if (response?.data?.status_code === 201) {
                 return response?.data;
             } else {
@@ -96,7 +96,36 @@ export const addCourseStep2 = createAsyncThunk(
     }
 )
 
-
+export const getAllCourse = createAsyncThunk(
+    'getAllCourse',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await api.post(`/admin/course/get-course-list`);
+            if (response?.data?.status_code === 200) {
+                return response?.data?.res;
+            } else {
+                return rejectWithValue(response);
+            }
+        } catch (error) {
+            return rejectWithValue(error);
+        }
+    }
+)
+export const courseDetails = createAsyncThunk(
+    'courseDetails',
+    async (input, { rejectWithValue }) => {
+        try {
+            const response = await api.post(`/admin/course/get-course-list`,input);
+            if (response?.data?.status_code === 200) {
+                return response?.data?.res;
+            } else {
+                return rejectWithValue(response);
+            }
+        } catch (error) {
+            return rejectWithValue(error);
+        }
+    }
+)
 const initialState = {
     loading: false,
     error: false,
@@ -109,6 +138,9 @@ const initialState = {
     addCourseStep1Data: {},
     searchModulesData:{},
     searchLessionData:{},
+    addCourseStep2Data:{},
+    allCourseData:[],
+    courseDetailsData:{}
 
 }
 
@@ -159,27 +191,63 @@ const CourseSlice = createSlice(
                     state.error = payload
                 })
                 .addCase(searchModule.pending, (state) => {
-                    state.addCourseStep2loading = true
+                    state.loading = true
                 })
                 .addCase(searchModule.fulfilled, (state, { payload }) => {
-                    state.addCourseStep2loading = false
+                    state.loading = false
                     state.searchModulesData = payload
                     state.error = false
                 })
                 .addCase(searchModule.rejected, (state, { payload }) => {
-                    state.addCourseStep2loading = false
+                    state.loading = false
                     state.error = payload
                 })
                 .addCase(searchLession.pending, (state) => {
-                    state.addCourseStep2loading = true
+                    state.loading = true
                 })
                 .addCase(searchLession.fulfilled, (state, { payload }) => {
-                    state.addCourseStep2loading = false
+                    state.loading= false
                     state.searchLessionData = payload
                     state.error = false
                 })
                 .addCase(searchLession.rejected, (state, { payload }) => {
-                    state.addCourseStep2loading = false
+                    state.loading= false
+                    state.error = payload
+                })
+                .addCase(addCourseStep2.pending, (state) => {
+                    state.addCourseStep2loading = true
+                })
+                .addCase(addCourseStep2.fulfilled, (state, { payload }) => {
+                    state.addCourseStep2loading= false
+                    state.addCourseStep2Data = payload
+                    state.error = false
+                })
+                .addCase(addCourseStep2.rejected, (state, { payload }) => {
+                    state.addCourseStep2loading= false
+                    state.error = payload
+                })
+                .addCase(getAllCourse.pending, (state) => {
+                    state.loading = true
+                })
+                .addCase(getAllCourse.fulfilled, (state, { payload }) => {
+                    state.loading= false
+                    state.allCourseData = payload
+                    state.error = false
+                })
+                .addCase(getAllCourse.rejected, (state, { payload }) => {
+                    state.loading= false
+                    state.error = payload
+                })
+                .addCase(courseDetails.pending, (state) => {
+                    state.loading = true
+                })
+                .addCase(courseDetails.fulfilled, (state, { payload }) => {
+                    state.loading= false
+                    state.courseDetailsData = payload
+                    state.error = false
+                })
+                .addCase(courseDetails.rejected, (state, { payload }) => {
+                    state.loading= false
                     state.error = payload
                 })
 
