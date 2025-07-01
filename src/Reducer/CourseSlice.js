@@ -48,6 +48,54 @@ export const addCourseStep1 = createAsyncThunk(
         }
     }
 )
+export const searchModule = createAsyncThunk(
+    'searchModule',
+    async (input, { rejectWithValue }) => {
+        try {
+            const response = await api.post(`/admin/course/search-modules`, input);
+            if (response?.data?.status_code === 200) {
+                return response?.data;
+            } else {
+                return rejectWithValue(response);
+            }
+        } catch (error) {
+            return rejectWithValue(error);
+        }
+    }
+)
+
+export const searchLession = createAsyncThunk(
+    'searchLession',
+    async (input, { rejectWithValue }) => {
+        try {
+            const response = await api.post(`/admin/course/search-lession`, input);
+            if (response?.data?.status_code === 200) {
+                return response?.data;
+            } else {
+                return rejectWithValue(response);
+            }
+        } catch (error) {
+            return rejectWithValue(error);
+        }
+    }
+)
+
+export const addCourseStep2 = createAsyncThunk(
+    'addCourseStep2',
+    async (input, { rejectWithValue }) => {
+        try {
+            const response = await api.post(`/admin/course/add-course-step-one`, input);
+            if (response?.data?.status_code === 201) {
+                return response?.data;
+            } else {
+                return rejectWithValue(response);
+            }
+        } catch (error) {
+            return rejectWithValue(error);
+        }
+    }
+)
+
 
 const initialState = {
     loading: false,
@@ -57,7 +105,10 @@ const initialState = {
     courseLevelDropdownloading: false,
     courseLevelDropdownData: {},
     addCourseStep1loading: false,
+    addCourseStep2loading:false,
     addCourseStep1Data: {},
+    searchModulesData:{},
+    searchLessionData:{},
 
 }
 
@@ -105,6 +156,30 @@ const CourseSlice = createSlice(
                 })
                 .addCase(addCourseStep1.rejected, (state, { payload }) => {
                     state.addCourseStep1loading = false
+                    state.error = payload
+                })
+                .addCase(searchModule.pending, (state) => {
+                    state.addCourseStep2loading = true
+                })
+                .addCase(searchModule.fulfilled, (state, { payload }) => {
+                    state.addCourseStep2loading = false
+                    state.searchModulesData = payload
+                    state.error = false
+                })
+                .addCase(searchModule.rejected, (state, { payload }) => {
+                    state.addCourseStep2loading = false
+                    state.error = payload
+                })
+                .addCase(searchLession.pending, (state) => {
+                    state.addCourseStep2loading = true
+                })
+                .addCase(searchLession.fulfilled, (state, { payload }) => {
+                    state.addCourseStep2loading = false
+                    state.searchLessionData = payload
+                    state.error = false
+                })
+                .addCase(searchLession.rejected, (state, { payload }) => {
+                    state.addCourseStep2loading = false
                     state.error = payload
                 })
 

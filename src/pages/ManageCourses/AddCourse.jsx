@@ -6,13 +6,14 @@ import { useState } from "react";
 
 const AddCourse = () => {
     const [step, setStep] = useState(1);
+    const [levelId, setLevelId] = useState();
 
     return (
         <>
             <ToastContainer />
 
-            {step === 1 && <AddCourseStep1 onNext={() => setStep(2)} />}
-            {step === 2 && <AddCourseStep2 onBack={() => setStep(1)} />}
+            {step === 1 && <AddCourseStep1 onNext={() => setStep(2)} setLevelId={setLevelId} level_id={levelId}/>}
+            {step === 2 && <AddCourseStep2 onBack={() => setStep(1)} levelId={levelId} />}
 
         </>
     )
