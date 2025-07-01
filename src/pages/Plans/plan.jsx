@@ -69,12 +69,12 @@ const Plan = () => {
   const StatusCellRenderer = (props) => {
     const isActive = props.value === 1;
     const statusText = isActive ? "Active" : "Inactive";
-    const statusColor = isActive ? "#10B981" : "#EF4444"; // Green for active, Red for inactive
+    const statusColor = isActive ? "#52b69a" : "#EF4444"; // Green for active, Red for inactive
 
     return (
       <div className="flex items-center h-full">
         <span
-          className="px-3 py-1 rounded-full text-white text-sm font-medium"
+          className="px-3 py-1 rounded-md text-white text-sm font-medium"
           style={{ backgroundColor: statusColor }}
         >
           {statusText}
@@ -89,7 +89,7 @@ const Plan = () => {
       <div className="flex items-center h-full">
         <button
           onClick={() => handleEdit(props.data.id)}
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+          className="bg-black hover:bg-blue-600 text-white px-4 py-1 rounded-md text-sm font-medium transition-colors"
         >
           Edit
         </button>
@@ -102,7 +102,7 @@ const Plan = () => {
       <div className="flex items-center h-full">
         <button
           onClick={() => handleShowDetails(props.data.id)}
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+          className="bg-black hover:bg-blue-600 text-white px-4 py-1 rounded-md text-sm font-medium transition-colors"
         >
           Details
         </button>
@@ -115,7 +115,7 @@ const Plan = () => {
       <div className="flex items-center h-full">
         <button
           onClick={() => handleAddDetails(props.data.id)}
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+          className="bg-black hover:bg-blue-600 text-white px-4 py-1 rounded-md text-sm font-medium transition-colors"
         >
           Add Plan Details
         </button>
@@ -186,35 +186,17 @@ const Plan = () => {
   return (
     <div>
       {/* Choose your plan section start here */}
-      <div className="choose_your_plan_section pb-16">
-        <div className="container max-w-6xl mx-auto py-0 lg:py-4 px-0">
-          <div
-            className="text-center"
-            data-aos="fade-up"
-            data-aos-duration="1500"
-          >
-            <div className="lg:flex items-center justify-between w-full">
-              <div className="lg:w-4/12">&nbsp;</div>
-              <div className="lg:w-4/12">
-                <h2 className="text-2xl lg:text-4xl font-semibold text-black lg:pb-2 pt-6">
-                  Plans
-                </h2>
-                {/* <p className="text-[#636363] text-base font-normal pb-4 lg:pb-10">
-                  No contracts, no surprise fees.
-                </p> */}
-              </div>
-              <div className="lg:w-4/12 mb-4">
-                <div className="flex justify-center lg:justify-end">
-                  <button
-                    type="button"
-                    onClick={() => handleCreatePlan()}
-                    className="bg-[#090722] hover:bg-black px-6 py-2 text-white text-base font-semibold flex justify-center items-center rounded-md"
-                  >
-                    Add Plans
-                  </button>
-                </div>
-              </div>
-            </div>
+      <div className="wrapper_area my-0 mx-auto p-6 rounded-xl bg-white">
+        <div className="h-full lg:h-screen">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-semibold">Plan Details</h2>
+            <button
+              type="button"
+              onClick={() => handleCreatePlan()}
+              className="bg-[#52b69a] hover:bg-black px-6 py-2.5 text-white text-sm font-semibold flex justify-center items-center rounded-md"
+            >
+              Add Plans
+            </button>
           </div>
           <div
             className="plan_tab_area"

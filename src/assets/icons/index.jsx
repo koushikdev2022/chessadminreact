@@ -55,6 +55,7 @@ import {
   BiCheckDouble,
   BiBell,
   BiMessageSquareEdit,
+  BiSolidMessageSquareEdit,
 } from "react-icons/bi";
 import { FaUsers, FaBell, FaPlusCircle, FaCircle } from "react-icons/fa";
 import { CgSwap, CgArrowsShrinkV, CgShoppingBag } from "react-icons/cg";
@@ -73,6 +74,8 @@ import {
   MdPreview,
   MdPriceChange,
   MdSupervisorAccount,
+  MdClass,
+  MdDelete,
 } from "react-icons/md";
 import {
   FaClockRotateLeft,
@@ -114,6 +117,9 @@ import { TbCheck } from "react-icons/tb";
 import { CiSearch } from "react-icons/ci";
 
 export {
+  MdDelete,
+  BiSolidMessageSquareEdit,
+  MdClass,
   CiSearch,
   IoMdClose,
   BiMessageSquareEdit,

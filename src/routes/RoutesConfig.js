@@ -31,6 +31,7 @@ import ModuleList from '../pages/ManageModule/ModuleList.jsx';
 import PaymentMethodList from '../pages/PaymentMethod/PaymentMethodList.jsx';
 import AddCourse from '../pages/ManageCourses/AddCourse.jsx';
 import AddCourseStep2 from '../pages/ManageCourses/AddCourseStep2.jsx';
+import ManageBatch from '../pages/ManageBatch/ManageBatch.jsx';
 
 const allRoutes = [
   {
@@ -184,6 +185,17 @@ const allRoutes = [
       {
         index: true,
         element: <TransactionList />,
+      },
+    ],
+  },
+
+  {
+    path: '/manage-batch',
+    element: <InsideLayout />,
+    children: [
+      {
+        index: true,
+        element: <ManageBatch />,
       },
     ],
   },

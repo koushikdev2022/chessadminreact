@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Modal, Button, TextInput, Label } from "flowbite-react";
-import { ToastContainer } from 'react-toastify';
-import { AgGridReact } from 'ag-grid-react';
-import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-alpine.css';
+import { ToastContainer } from "react-toastify";
+import { AgGridReact } from "ag-grid-react";
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-alpine.css";
 import { useNavigate } from "react-router-dom";
 
 const ManageCourses = () => {
@@ -12,33 +12,38 @@ const ManageCourses = () => {
 
   const [rowData] = useState([
     {
-      name: 'Sample Course',
-      phone: '+1234567890',
-      email: 'course@example.com',
-      address: '123 Course Street',
-      country: 'United States'
-    }
+      name: "Sample Course",
+      phone: "+1234567890",
+      email: "course@example.com",
+      address: "123 Course Street",
+      country: "United States",
+    },
   ]);
 
   const [columnDefs] = useState([
-    { field: 'name', headerName: 'Name', sortable: true, filter: true },
-    { field: 'phone', headerName: 'Phone No', sortable: true, filter: true },
-    { field: 'email', headerName: 'Email', sortable: true, filter: true },
-    { field: 'address', headerName: 'Physical Address', sortable: true, filter: true },
-    { field: 'country', headerName: 'Country', sortable: true, filter: true },
+    { field: "name", headerName: "Name", sortable: true, filter: true },
+    { field: "phone", headerName: "Phone No", sortable: true, filter: true },
+    { field: "email", headerName: "Email", sortable: true, filter: true },
     {
-      headerName: 'Students',
-      field: 'students',
+      field: "address",
+      headerName: "Physical Address",
+      sortable: true,
+      filter: true,
+    },
+    { field: "country", headerName: "Country", sortable: true, filter: true },
+    {
+      headerName: "Students",
+      field: "students",
       cellRenderer: () => (
-        <Button size="sm" color="success">
+        <Button className="border text-[#52b69a] border-[#52b69a] bg-white hover:bg-[#52b69a] hover:text-white text-xl px-6 py-0 my-1">
           View Students
         </Button>
-      )
-    }
+      ),
+    },
   ]);
 
   const handleAddCourse = () => {
-    navigate('/add-course')
+    navigate("/add-course");
   };
 
   return (
@@ -50,18 +55,21 @@ const ManageCourses = () => {
             <h2 className="text-2xl font-semibold">Course Details</h2>
             <Button
               onClick={() => handleAddCourse()}
-              className="bg-[#AB54DB] hover:bg-black px-6 py-2 text-white text-base font-semibold flex justify-center items-center rounded-md"
+              className="bg-[#52b69a] hover:bg-black px-4 py-1 text-white text-base font-semibold flex justify-center items-center rounded-md"
             >
               Add Course
             </Button>
           </div>
-          <div className="ag-theme-alpine" style={{ height: 600, width: '100%' }}>
+          <div
+            className="ag-theme-alpine"
+            style={{ height: 600, width: "100%" }}
+          >
             <AgGridReact
               rowData={rowData}
               columnDefs={columnDefs}
               pagination={true}
               paginationPageSize={10}
-              domLayout='autoHeight'
+              domLayout="autoHeight"
             />
           </div>
         </div>
@@ -112,4 +120,4 @@ const ManageCourses = () => {
   );
 };
 
-export default ManageCourses; 
+export default ManageCourses;

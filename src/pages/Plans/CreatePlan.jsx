@@ -77,13 +77,13 @@ const CreatePlan = () => {
                           onClick={() => {
                             navigate("/manage-plans");
                           }}
-                          className="text-white text-sm font-medium bg-[#515151] hover:bg-[#AB54DB] rounded-lg px-4 py-2.5"
+                          className="text-white text-sm font-medium bg-black hover:bg-[#9b1c1c] rounded-lg px-4 py-2"
                         >
                           Cancel
                         </button>
                         <button
                           type="submit"
-                          className="text-white text-sm font-medium bg-[#AB54DB] hover:bg-[#515151] rounded-lg px-4 py-2.5"
+                          className="text-white text-sm font-medium bg-[#52b69a] hover:bg-black rounded-lg px-4 py-2"
                         >
                           Add
                         </button>
