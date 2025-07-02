@@ -8,13 +8,14 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { getAllCourse } from "../../Reducer/CourseSlice";
 import { useSelector } from "react-redux";
-import { MdDeleteForever, MdEditNote } from "react-icons/md";
+import { MdDelete, MdDeleteForever, MdEditNote } from "react-icons/md";
 import { FaRegEdit } from "react-icons/fa";
+import { BiSolidMessageSquareEdit } from "react-icons/bi";
 
 const ManageCourses = () => {
   // const [openModal, setOpenModal] = useState(false);
   const navigate = useNavigate();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const { loading, allCourseData } = useSelector((state) => state?.courses);
 
   const [courseId, setCourseId] = useState();
@@ -22,52 +23,79 @@ const ManageCourses = () => {
   useEffect(() => {
     dispatch(getAllCourse()).then((res) => {
       // setCourseId(res)
-      console.log('res', res)
-    })
-  }, [])
+      console.log("res", res);
+    });
+  }, []);
   // console.log("allCourseData",allCourseData)
 
   const handleDelete = () => {
-    console.log("delete")
-  }
+    console.log("delete");
+  };
   const handleEdit = () => {
-    console.log("edit")
-  }
+    console.log("edit");
+  };
   const handleCourseDetails = (id) => {
     // console.log("id",id)
-    navigate(`/course-details/${id}`)
-  }
+    navigate(`/course-details/${id}`);
+  };
 
   const [columnDefs] = useState([
-    { field: 'title', headerName: 'Course Title', sortable: true, filter: true },
-    { field: 'sub_title', headerName: 'Course Subtitle', sortable: true, filter: true },
-    { field: 'course_level_id', headerName: 'Course Level', sortable: true, filter: true },
-    { field: 'duration_integer', headerName: 'Course Duration', sortable: true, filter: true },
-
     {
-      headerName: 'Action',
-      field: 'Action',
-      cellRenderer: () => (
-        <div className="flex justify-start items-center h-full gap-2">
-          <FaRegEdit className="text-green-800 text-xl text-center cursor-pointer" onClick={handleEdit} />
-          <MdDeleteForever className="text-red-700 text-xl text-center cursor-pointer" onClick={handleDelete} />
-
-        </div>
-      )
+      field: "title",
+      headerName: "Course Title",
+      sortable: true,
+      filter: true,
     },
     {
-      headerName: 'Details',
-      field: 'Details',
+      field: "sub_title",
+      headerName: "Course Subtitle",
+      sortable: true,
+      filter: true,
+    },
+    {
+      field: "course_level_id",
+      headerName: "Course Level",
+      sortable: true,
+      filter: true,
+    },
+    {
+      field: "duration_integer",
+      headerName: "Course Duration",
+      sortable: true,
+      filter: true,
+    },
+
+    {
+      headerName: "Action",
+      field: "Action",
+      cellRenderer: () => (
+        <div className="flex justify-start items-center h-full gap-2">
+          <BiSolidMessageSquareEdit
+            className="text-[#34A0A4] hover:text-black text-2xl text-center cursor-pointer"
+            onClick={handleEdit}
+          />
+          <MdDelete
+            className="text-[#F94141] hover:text-[#ff0000] text-2xl text-center cursor-pointer"
+            onClick={handleDelete}
+          />
+        </div>
+      ),
+    },
+    {
+      headerName: "Details",
+      field: "Details",
       cellRenderer: (params) => (
         <div className="flex justify-start items-center h-full">
-          <Button size="sm" color="success" onClick={()=>handleCourseDetails(params.data.id)}>
+          <Button
+            className="border text-[#52b69a] border-[#52b69a] bg-white hover:bg-[#52b69a] hover:text-white text-xl px-6 py-0 my-1"
+            onClick={() => handleCourseDetails(params.data.id)}
+          >
             Details
           </Button>
         </div>
-      )
-    }
-  
-  ])
+      ),
+    },
+  ]);
 
   const handleAddCourse = () => {
     navigate("/add-course");
@@ -87,22 +115,24 @@ const ManageCourses = () => {
               Add Course
             </Button>
           </div>
-          {
-            allCourseData &&
-            <div className="ag-theme-alpine" style={{ height: 600, width: '100%' }}>
-              {loading ? "Loading..." :
+          {allCourseData && (
+            <div
+              className="ag-theme-alpine"
+              style={{ height: 600, width: "100%" }}
+            >
+              {loading ? (
+                "Loading..."
+              ) : (
                 <AgGridReact
                   rowData={allCourseData}
                   columnDefs={columnDefs}
                   pagination={true}
                   paginationPageSize={10}
-                  domLayout='autoHeight'
+                  domLayout="autoHeight"
                 />
-              }
+              )}
             </div>
-
-          }
-         
+          )}
         </div>
       </div>
 
