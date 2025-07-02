@@ -117,7 +117,7 @@ export const courseDetails = createAsyncThunk(
         try {
             const response = await api.post(`/admin/course/get-course-list`,input);
             if (response?.data?.status_code === 200) {
-                return response?.data?.res;
+                return response?.data?.res[0];
             } else {
                 return rejectWithValue(response);
             }
