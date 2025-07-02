@@ -439,7 +439,7 @@ const ManageCoaches = () => {
         onClick={handleAvailabilityClick}
         className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm font-medium transition-colors duration-200"
       >
-        View Calendar
+        View
       </button>
     );
   };
