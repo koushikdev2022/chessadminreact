@@ -156,7 +156,7 @@ const AddCourseStep2 = ({ onBack, levelId, course_id }) => {
                         navigate('/manage-courses')
                     }, 3000)
                 } else {
-                    toast.error(res?.payload?.data?.message);
+                    toast.error(res?.payload?.response?.data?.message);
                 }
                 // navigate('/manage-courses')
             })
@@ -171,7 +171,7 @@ const AddCourseStep2 = ({ onBack, levelId, course_id }) => {
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-2xl font-semibold">Create New Course</h2>
                         </div>
-                        <button type="button" className="border border-[#000] text-[#000] w-[15rem] px-3 py-1 rounded hover:bg-gray-100 mb-6" onClick={handleAddModuleForm}>
+                        <button type="button" className="border border-[#52b69a] text-[#52b69a] w-[15rem] px-3 py-1 rounded hover:bg-gray-100 mb-6" onClick={handleAddModuleForm}>
                             + Add Module
                         </button>
                     </div>
