@@ -40,6 +40,7 @@ import {
   BsDatabaseFill,
   BsFillInfoCircleFill,
   BsViewStacked,
+  BsFillPlusCircleFill,
 } from "react-icons/bs";
 import {
   BiSolidUser,
@@ -63,6 +64,7 @@ import {
   HiArrowsRightLeft,
   HiReceiptRefund,
   HiDocumentText,
+  HiMinusCircle,
 } from "react-icons/hi2";
 import {
   MdManageAccounts,
@@ -84,6 +86,7 @@ import {
   FaPlus,
   FaFileInvoiceDollar,
   FaHandshakeSimple,
+  FaCircleMinus,
 } from "react-icons/fa6";
 
 import { FcGoogle } from "react-icons/fc";
@@ -117,6 +120,9 @@ import { TbCheck } from "react-icons/tb";
 import { CiSearch } from "react-icons/ci";
 
 export {
+  FaCircleMinus,
+  HiMinusCircle,
+  BsFillPlusCircleFill,
   MdDelete,
   BiSolidMessageSquareEdit,
   MdClass,
