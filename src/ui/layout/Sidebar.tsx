@@ -7,7 +7,7 @@ import { logo, smallLogo } from '../../assets/images/images';
 
 import { AiFillSetting, AiFillTag, AiFillTags, AiOutlineDashboard, AiOutlineLogout, AiOutlineNotification, AiOutlineUser, BiLineChart, BiLineChartDown, BsPersonWorkspace, BsViewStacked, FiHome, MdManageAccounts, MdOutlineShoppingCartCheckout, MdSpaceDashboard, MdViewStream, PiClipboardTextBold, RiCoupon2Fill, RiCouponLine, RxDashboard, TfiMenuAlt } from "../../assets/icons/index";
 import { FaCircle, FaFirstOrderAlt } from 'react-icons/fa';
-import { MdSportsKabaddi, MdFamilyRestroom, MdSchool, MdAdminPanelSettings, MdOutlineSubscriptions, MdSubscriptions, MdTopic, MdPayment } from 'react-icons/md';
+import { MdSportsKabaddi, MdFamilyRestroom, MdSchool, MdAdminPanelSettings, MdOutlineSubscriptions, MdSubscriptions, MdTopic, MdPayment, MdClass } from 'react-icons/md';
 import userRoles from '../../pages/utils/userRoles';
 import { SiLevelsdotfyi } from "react-icons/si";
 import { RiSoundModuleFill } from 'react-icons/ri';
@@ -174,6 +174,26 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     <>
                       <MdFamilyRestroom className='text-xl' />
                       Manage Parents
+                    </>
+                  }
+                </NavLink>
+              </li>
+
+              <li>
+                <NavLink
+                  to="/manage-batch"
+                  className={`group relative flex items-center gap-2 rounded-sm px-4 py-2 ${sidebarOpen ? 'justify-center' : 'justify-start'} font-normal text-sm text-gray-600 duration-300 ease-in-out hover:bg-graydark mb-2 ${pathname.includes('manage-batch') &&
+                    'bg-graydark dark:bg-meta-4'
+                    }`}
+                >
+                  {sidebarOpen ?
+                    <>
+                      <MdClass className='text-xl' />
+                    </>
+                    :
+                    <>
+                      <MdClass className='text-xl' />
+                      Manage Batch
                     </>
                   }
                 </NavLink>

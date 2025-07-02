@@ -31,6 +31,8 @@ import ModuleList from '../pages/ManageModule/ModuleList.jsx';
 import PaymentMethodList from '../pages/PaymentMethod/PaymentMethodList.jsx';
 import AddCourse from '../pages/ManageCourses/AddCourse.jsx';
 import AddCourseStep2 from '../pages/ManageCourses/AddCourseStep2.jsx';
+import CourseDetails from '../pages/ManageCourses/CourseDetails.jsx';
+import ManageBatch from '../pages/ManageBatch/ManageBatch.jsx';
 
 const allRoutes = [
   {
@@ -189,6 +191,17 @@ const allRoutes = [
   },
 
   {
+    path: '/manage-batch',
+    element: <InsideLayout />,
+    children: [
+      {
+        index: true,
+        element: <ManageBatch />,
+      },
+    ],
+  },
+
+  {
     path: '/manage-courses',
     element: <InsideLayout />,
     children: [
@@ -302,16 +315,26 @@ const allRoutes = [
       },
     ],
   },
-  // {
-  //   path: '/AddCourseStep2',
-  //   element: <InsideLayout />,
-  //   children: [
-  //     {
-  //       index: true,
-  //       element: <AddCourseStep2 />,
-  //     },
-  //   ],
-  // },
+  {
+    path: '/course-details',
+    element: <InsideLayout />,
+    children: [
+      {
+        index: true,
+        element: <CourseDetails />,
+      },
+    ],
+  },
+  {
+    path: '/AddCourseStep2',
+    element: <InsideLayout />,
+    children: [
+      {
+        index: true,
+        element: <AddCourseStep2 />,
+      },
+    ],
+  },
 
   {
     path: '*',

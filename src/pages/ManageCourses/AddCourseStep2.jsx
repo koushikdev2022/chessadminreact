@@ -4,13 +4,22 @@ import { FaRegImage } from "react-icons/fa";
 import Select from "react-select";
 import { Controller } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { addCourseStep1, addCourseStep2, courseLevelDropdown, courseTagsDropdown, searchLession, searchModule } from "../../Reducer/CourseSlice";
+import {
+  addCourseStep1,
+  addCourseStep2,
+  courseLevelDropdown,
+  courseTagsDropdown,
+  searchLession,
+  searchModule,
+} from "../../Reducer/CourseSlice";
 import { toast, ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 
-const AddCourseStep2 = ({ onBack, levelId }) => {
+const AddCourseStep2 = ({ onBack, levelId, course_id }) => {
 
     const dispatch = useDispatch();
+    const navigate=useNavigate();
     const { loading, addCourseStep2loading, searchModulesData, searchLessionData } = useSelector((state) => state?.courses);
 
     // Store multiple module forms
@@ -124,20 +133,45 @@ const AddCourseStep2 = ({ onBack, levelId }) => {
         }));
         console.log('All modules data:', modulesData);
         // Here you can dispatch or send this array as needed
+
+        const formData = new FormData();
+
+        formData.append('course_id', course_id);
+        modulesData.forEach((mod) => {
+            formData.append('module_id', mod.moduleId);
+            formData.append('lession_id', mod.lessionId);
+            formData.append('module_duration', mod.module_duration);
+
+            mod.files.forEach((file) => {
+                formData.append('homework', file); 
+            });
+        });
+
+        dispatch(addCourseStep2(formData))
+            .then((res) => {
+                console.log("res", res)
+                if (res?.payload?.status_code === 200) {
+                toast.success(res?.payload?.message);
+            } else {
+                toast.error(res?.payload?.response?.data?.message);
+            }
+                // navigate('/manage-courses')
+            })
+
     };
 
     return (
         <>
             <div className="min-h-screen bg-gray-100">
                 <div className="max-w-full mx-auto p-6 bg-white shadow rounded-xl">
-                   <div className="flex justify-between items-center">
-                   <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-2xl font-semibold">Create New Course</h2>
+                    <div className="flex justify-between items-center">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-2xl font-semibold">Create New Course</h2>
+                        </div>
+                        <button type="button" className="border border-blue-800 text-blue-800 w-[15rem] px-3 py-1 rounded hover:bg-gray-100 mb-6" onClick={handleAddModuleForm}>
+                            + Add Module
+                        </button>
                     </div>
-                   <button type="button" className="border border-blue-800 text-blue-800 w-[15rem] px-3 py-1 rounded hover:bg-gray-100 mb-6" onClick={handleAddModuleForm}>
-                        + Add Module
-                    </button>
-                   </div>
                     <form onSubmit={handleSubmit(onSubmit)}>
                         {moduleForms.map((form, idx) => (
                             <div key={idx} className="mb-8">
@@ -273,8 +307,11 @@ const AddCourseStep2 = ({ onBack, levelId }) => {
                     </form>
                 </div>
             </div>
-        </>
-    )
+          
+          
+         
+    </>
+  );
 };
 
 export default AddCourseStep2;
