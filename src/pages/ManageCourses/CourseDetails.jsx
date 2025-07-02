@@ -32,6 +32,11 @@ const CourseDetails = () => {
             console.log('res', res)
         })
     }, [])
+
+    const handleFileOpen = (url) => {
+        // navigate(`/${url}`)
+        window.open(url, '_blank')
+    }
     return (
         <>
             <div className="min-h-screen bg-gray-100">
@@ -109,7 +114,7 @@ const CourseDetails = () => {
                             {/* Course Description */}
                             <div className='w-1/2'>
                                 <div className="font-semibold text-lg mb-1">Course Description</div>
-                                <div className="text-gray-700">
+                                <div className="text-gray-700 text-wrap">
                                     {courseDetailsData?.course_description || 'N/A'}
                                 </div>
                             </div>
@@ -159,8 +164,8 @@ const CourseDetails = () => {
                                             <div className="font-semibold">Homework File</div>
                                             {mod?.Lessions?.map(x => (
                                                 x?.Homeworks?.map(hfile => (
-                                                    <div className="flex items-center border rounded-lg p-3 bg-gray-50 mt-1 overflow-hidden">
-                                                        <span className="mr-2 text-[20px] text-gray-400">
+                                                    <div className="flex items-center border rounded-lg p-3 bg-gray-50 mt-1 overflow-hidden cursor-pointer" onClick={() => handleFileOpen(hfile?.homework_url)}>
+                                                        <span className="mr-2 text-[20px] text-gray-400" >
                                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                                                                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5V6.75A2.25 2.25 0 015.25 4.5h13.5A2.25 2.25 0 0121 6.75v10.5M3 16.5A2.25 2.25 0 005.25 18.75h13.5A2.25 2.25 0 0021 16.5M3 16.5l4.72-4.72a2.25 2.25 0 013.18 0l2.09 2.09m0 0l.72-.72a2.25 2.25 0 013.18 0L21 16.5m-8.25-2.25h.008v.008H12v-.008z" />
                                                             </svg>

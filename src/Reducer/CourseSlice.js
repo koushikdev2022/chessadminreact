@@ -85,7 +85,8 @@ export const addCourseStep2 = createAsyncThunk(
     async (input, { rejectWithValue }) => {
         try {
             const response = await api.post(`/admin/course/add-course-step-two`, input);
-            if (response?.data?.status_code === 201) {
+            // console.log("redux res",response)
+            if (response?.data?.status_code === 200) {
                 return response?.data;
             } else {
                 return rejectWithValue(response);

@@ -5,12 +5,12 @@ import Select from "react-select";
 import { Controller } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  addCourseStep1,
-  addCourseStep2,
-  courseLevelDropdown,
-  courseTagsDropdown,
-  searchLession,
-  searchModule,
+    addCourseStep1,
+    addCourseStep2,
+    courseLevelDropdown,
+    courseTagsDropdown,
+    searchLession,
+    searchModule,
 } from "../../Reducer/CourseSlice";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -19,7 +19,7 @@ import { useNavigate } from "react-router-dom";
 const AddCourseStep2 = ({ onBack, levelId, course_id }) => {
 
     const dispatch = useDispatch();
-    const navigate=useNavigate();
+    const navigate = useNavigate();
     const { loading, addCourseStep2loading, searchModulesData, searchLessionData } = useSelector((state) => state?.courses);
 
     // Store multiple module forms
@@ -32,7 +32,7 @@ const AddCourseStep2 = ({ onBack, levelId, course_id }) => {
             selectedLession: null,
             files: [],
             module_duration_n: '',
-            module_duration: 'week',
+            module_duration: '',
             moduleOptions: [],
             lessionOptions: [],
         },
@@ -87,7 +87,7 @@ const AddCourseStep2 = ({ onBack, levelId, course_id }) => {
                 selectedLession: null,
                 files: [],
                 module_duration_n: '',
-                module_duration: 'week',
+                module_duration: '',
                 moduleOptions: [],
                 lessionOptions: [],
             },
@@ -143,7 +143,7 @@ const AddCourseStep2 = ({ onBack, levelId, course_id }) => {
             formData.append('module_duration', mod.module_duration);
 
             mod.files.forEach((file) => {
-                formData.append('homework', file); 
+                formData.append('homework', file);
             });
         });
 
@@ -151,10 +151,13 @@ const AddCourseStep2 = ({ onBack, levelId, course_id }) => {
             .then((res) => {
                 console.log("res", res)
                 if (res?.payload?.status_code === 200) {
-                toast.success(res?.payload?.message);
-            } else {
-                toast.error(res?.payload?.response?.data?.message);
-            }
+                    toast.success(res?.payload?.message);
+                    setTimeout(() => {
+                        navigate('/manage-courses')
+                    }, 3000)
+                } else {
+                    toast.error(res?.payload?.data?.message);
+                }
                 // navigate('/manage-courses')
             })
 
@@ -168,7 +171,7 @@ const AddCourseStep2 = ({ onBack, levelId, course_id }) => {
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-2xl font-semibold">Create New Course</h2>
                         </div>
-                        <button type="button" className="border border-blue-800 text-blue-800 w-[15rem] px-3 py-1 rounded hover:bg-gray-100 mb-6" onClick={handleAddModuleForm}>
+                        <button type="button" className="border border-[#000] text-[#000] w-[15rem] px-3 py-1 rounded hover:bg-gray-100 mb-6" onClick={handleAddModuleForm}>
                             + Add Module
                         </button>
                     </div>
@@ -238,9 +241,9 @@ const AddCourseStep2 = ({ onBack, levelId, course_id }) => {
                                     <div className="flex flex-col md:flex-row gap-4 mb-1">
                                         <label className="w-full md:w-1/2 border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center text-center bg-blue-50 cursor-pointer hover:border-blue-400">
                                             <input type="file" className="hidden" accept="application/pdf" multiple onChange={(e) => handleFileChange(idx, e)} />
-                                            <FaRegImage size={36} className="text-blue-500 mb-2" />
+                                            <FaRegImage size={36} className="text-[#52b69a] mb-2" />
                                             <span className="text-sm text-gray-600">
-                                                Drag and Drop PDF files or <span className="text-blue-600 font-medium">Browse</span><br />
+                                                Drag and Drop PDF files or <span className="text-[#52b69a] font-medium">Browse</span><br />
                                                 <span className="text-xs text-gray-400">PDF only (max 30 MB each)</span>
                                             </span>
                                         </label>
@@ -286,9 +289,10 @@ const AddCourseStep2 = ({ onBack, levelId, course_id }) => {
                                                 value={form.module_duration}
                                                 onChange={e => updateForm(idx, { module_duration: e.target.value })}
                                             >
-                                                <option value='week'>Week</option>
-                                                <option value='month'>Month</option>
-                                                <option value='year'>Year</option>
+                                                <option value="">Select</option>
+                                                <option value="week">Week(s)</option>
+                                                <option value="month">Month(s)</option>
+                                                <option value="year">Year(s)</option>
                                             </select>
                                         </div>
                                     </div>
@@ -297,21 +301,21 @@ const AddCourseStep2 = ({ onBack, levelId, course_id }) => {
                             </div>
                         ))}
                         <div className="flex justify-end gap-4 mb-6">
-                            <button onClick={onBack} className="border border-blue-800 text-blue-800 px-5 py-2 rounded hover:bg-gray-100">
+                            <button onClick={onBack} className="bg-black text-white px-5 py-2 rounded hover:bg-[#8f8f8f]">
                                 Cancel
                             </button>
-                            <button type="submit" className="bg-blue-800 text-white px-6 py-2 rounded hover:bg-blue-900">
+                            <button type="submit" className="bg-[#52b69a] text-white px-6 py-2 rounded hover:bg-black">
                                 {addCourseStep2loading ? "Publishing please wait..." : "Publish Course →"}
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
-          
-          
-         
-    </>
-  );
+
+
+
+        </>
+    );
 };
 
 export default AddCourseStep2;
