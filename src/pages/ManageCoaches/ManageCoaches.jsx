@@ -360,7 +360,6 @@ import {
   getCoachListOperationalHead,
 } from "../../Reducer/CoachSlice";
 import { useSelector } from "react-redux";
-
 const ManageCoaches = () => {
   const { getCoachOHData, allCoach } = useSelector((state) => state?.coach);
   const [openModal, setOpenModal] = useState(false);
@@ -394,6 +393,38 @@ const ManageCoaches = () => {
     nevigate("/add-coach");
   };
 
+  // Helper function to convert time to minutes
+  const timeToMinutes = (time24) => {
+    const [hours, minutes] = time24.split(":");
+    return parseInt(hours) * 60 + parseInt(minutes);
+  };
+
+  // Helper function to convert minutes to time
+  const minutesToTime = (minutes) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    const ampm = hours >= 12 ? "PM" : "AM";
+    const hour12 = hours % 12 || 12;
+    return `${hour12}:${mins.toString().padStart(2, "0")} ${ampm}`;
+  };
+
+  // Check if coach is available on a specific date
+  const isCoachAvailableOnDate = (coachData, date) => {
+    const dayName = date.toLocaleDateString("en-US", { weekday: "long" });
+    const fullCoachData = getCoachOHData?.results?.find(
+      (coach) => coach.id === coachData.id
+    );
+
+    if (!fullCoachData || !fullCoachData.CoachTime) {
+      return false;
+    }
+
+    // Check if coach has any schedule for this day
+    return fullCoachData.CoachTime.some((timeSlot) =>
+      timeSlot.Day?.some((day) => day.day === dayName)
+    );
+  };
+
   // Availability Button Cell Renderer
   const AvailabilityCellRenderer = (params) => {
     const handleAvailabilityClick = () => {
@@ -413,7 +444,9 @@ const ManageCoaches = () => {
     );
   };
 
-  // Function to calculate both available and unavailable slots for a specific date
+  // Function to calculate available and unavailable slots for a specific date
+
+  // Fixed calculateSlots function - replace your existing one with this
   const calculateSlots = (coachData, date) => {
     const dayName = date.toLocaleDateString("en-US", { weekday: "long" });
 
@@ -423,106 +456,112 @@ const ManageCoaches = () => {
     );
 
     if (!fullCoachData || !fullCoachData.CoachTime) {
-      // If no data, coach is completely available
+      setAvailableSlots([]);
       setUnavailableSlots([]);
-      setAvailableSlots([
-        {
-          startTime: "Available all day",
-          endTime: "",
-          note: "No scheduled unavailable times",
-        },
-      ]);
       return;
     }
 
-    // Get unavailable slots for this specific day
-    const dayUnavailableSlots = [];
+    // Check if coach has schedule for this day
+    const daySchedules = fullCoachData.CoachTime.filter((timeSlot) =>
+      timeSlot.Day?.some((day) => day.day === dayName)
+    );
 
-    fullCoachData.CoachTime.forEach((timeSlot) => {
-      // Check if this unavailable slot applies to the selected day
-      const appliesToThisDay = timeSlot.Day?.some((day) => day.day === dayName);
+    if (daySchedules.length === 0) {
+      setAvailableSlots([]);
+      setUnavailableSlots([]);
+      return;
+    }
 
-      if (appliesToThisDay) {
-        const unavailableSlot = {
-          startTime: formatTime(timeSlot.start_time, timeSlot.start_time_am),
-          endTime: formatTime(timeSlot.end_time, timeSlot.end_time_am),
-          timeZoneId: timeSlot.time_zone_id,
-          breakTimes:
-            timeSlot.CoachBreakTime?.map((breakTime) => ({
-              startTime: formatTime(
-                breakTime.start_time,
-                breakTime.start_time_am
-              ),
-              endTime: formatTime(breakTime.end_time, breakTime.end_time_am),
-            })) || [],
-        };
-        dayUnavailableSlots.push(unavailableSlot);
+    const availableSlotsList = [];
+    const unavailableSlotsList = [];
+
+    daySchedules.forEach((schedule) => {
+      const startTime = timeToMinutes(schedule.start_time);
+      const endTime = timeToMinutes(schedule.end_time);
+      const breakTimes = schedule.CoachBreakTime || [];
+
+      // Sort break times by start time
+      const sortedBreakTimes = breakTimes
+        .map((breakTime) => ({
+          start: timeToMinutes(breakTime.start_time),
+          end: timeToMinutes(breakTime.end_time),
+        }))
+        .sort((a, b) => a.start - b.start);
+
+      // Create continuous time blocks
+      let currentTime = startTime;
+
+      for (const breakTime of sortedBreakTimes) {
+        // Add available time block before break (if exists)
+        if (currentTime < breakTime.start) {
+          availableSlotsList.push({
+            startTime: minutesToTime(currentTime),
+            endTime: minutesToTime(breakTime.start),
+            type: "available",
+            note: "Available for booking",
+          });
+        }
+
+        // Add break time block
+        unavailableSlotsList.push({
+          startTime: minutesToTime(breakTime.start),
+          endTime: minutesToTime(breakTime.end),
+          type: "break",
+          note: "Break Time",
+        });
+
+        currentTime = Math.max(currentTime, breakTime.end);
+      }
+
+      // Add remaining available time block after all breaks
+      if (currentTime < endTime) {
+        availableSlotsList.push({
+          startTime: minutesToTime(currentTime),
+          endTime: minutesToTime(endTime),
+          type: "available",
+          note: "Available for booking",
+        });
       }
     });
 
-    setUnavailableSlots(dayUnavailableSlots);
-
-    // Calculate available slots (opposite of unavailable)
-    if (dayUnavailableSlots.length === 0) {
-      setAvailableSlots([
-        {
-          startTime: "Available all day",
-          endTime: "",
-          note: "No scheduled unavailable times",
-        },
-      ]);
-    } else {
-      // For simplicity, just show "Available when not in unavailable slots"
-      setAvailableSlots([
-        {
-          startTime: "Available",
-          endTime: "when not unavailable",
-          note: "Free time slots between unavailable periods",
-        },
-      ]);
-    }
+    setAvailableSlots(availableSlotsList);
+    setUnavailableSlots(unavailableSlotsList);
   };
 
-  // Function to check if coach has unavailable slots on a specific date
-  const hasUnavailableSlotsOnDate = (coachData, date) => {
-    const dayName = date.toLocaleDateString("en-US", { weekday: "long" });
-    const fullCoachData = getCoachOHData?.results?.find(
-      (coach) => coach.id === coachData.id
-    );
-
-    if (!fullCoachData || !fullCoachData.CoachTime) {
-      return false; // No unavailable slots
-    }
-
-    // Check if there are unavailable slots for this day
-    return fullCoachData.CoachTime.some((timeSlot) =>
-      timeSlot.Day?.some((day) => day.day === dayName)
-    );
-  };
-
-  // Custom date picker day class name - Red for unavailable, Green for available
+  // Custom date picker day class name - Only available days are enabled
   const getDayClassName = (date) => {
     if (selectedCoachForCalendar) {
-      const hasUnavailableSlots = hasUnavailableSlotsOnDate(
+      const isAvailable = isCoachAvailableOnDate(
         selectedCoachForCalendar,
         date
       );
 
-      if (hasUnavailableSlots) {
-        return "unavailable-day"; // Red styling
+      if (isAvailable) {
+        return "available-day"; // Green styling for available days
       } else {
-        return "available-day"; // Green styling
+        return "disabled-day"; // Gray styling for disabled days
       }
     }
     return "";
   };
 
-  // Handle date selection in calendar
+  // Handle date selection in calendar - only allow available dates
   const handleDateSelect = (date) => {
-    setSelectedDate(date);
-    if (selectedCoachForCalendar) {
+    if (
+      selectedCoachForCalendar &&
+      isCoachAvailableOnDate(selectedCoachForCalendar, date)
+    ) {
+      setSelectedDate(date);
       calculateSlots(selectedCoachForCalendar, date);
     }
+  };
+
+  // Filter dates to disable unavailable dates
+  const filterDate = (date) => {
+    if (selectedCoachForCalendar) {
+      return isCoachAvailableOnDate(selectedCoachForCalendar, date);
+    }
+    return true;
   };
 
   // Checkbox cell renderer
@@ -791,6 +830,7 @@ const ManageCoaches = () => {
                   onChange={handleDateSelect}
                   inline
                   dayClassName={getDayClassName}
+                  filterDate={filterDate}
                 />
               </div>
 
@@ -801,8 +841,8 @@ const ManageCoaches = () => {
                   <span>Available Days</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <div className="w-4 h-4 bg-red-200 border border-red-400 rounded"></div>
-                  <span>Has Unavailable Slots</span>
+                  <div className="w-4 h-4 bg-gray-200 border border-gray-400 rounded"></div>
+                  <span>Disabled Days</span>
                 </div>
               </div>
             </div>
@@ -813,67 +853,77 @@ const ManageCoaches = () => {
                 Schedule for {selectedDate.toDateString()}
               </h3>
 
-              {/* Show Unavailable Slots */}
-              {unavailableSlots.length > 0 && (
-                <div className="mb-6">
-                  <h4 className="text-md font-medium text-red-600 mb-2">
-                    🚫 Unavailable Slots:
-                  </h4>
-                  <div className="space-y-2">
-                    {unavailableSlots.map((slot, index) => (
-                      <div
-                        key={index}
-                        className="bg-red-50 p-3 rounded-lg border-l-4 border-red-500"
-                      >
-                        <div className="font-semibold text-red-600 text-sm">
-                          {slot.startTime} - {slot.endTime}
-                        </div>
-                        {slot.breakTimes.length > 0 && (
-                          <div className="text-xs text-red-500 mt-1">
-                            <span>Break Times: </span>
-                            {slot.breakTimes.map((breakTime, breakIndex) => (
-                              <span key={breakIndex} className="mr-2">
-                                {breakTime.startTime}-{breakTime.endTime}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+              {/* Check if coach is available on selected date */}
+              {selectedCoachForCalendar &&
+              !isCoachAvailableOnDate(
+                selectedCoachForCalendar,
+                selectedDate
+              ) ? (
+                <div className="text-center py-8 text-gray-500">
+                  <div className="text-3xl mb-2">📅</div>
+                  <p className="text-lg font-medium">Not Available</p>
+                  <p>Coach is not scheduled to work on this day</p>
                 </div>
-              )}
-
-              {/* Show Available Status */}
-              <div className="mb-6">
-                <h4 className="text-md font-medium text-green-600 mb-2">
-                  ✅ Availability Status:
-                </h4>
-                {availableSlots.length > 0 ? (
-                  <div className="space-y-3">
-                    {availableSlots.map((slot, index) => (
-                      <div
-                        key={index}
-                        className="bg-green-50 p-4 rounded-lg border-l-4 border-green-500"
-                      >
-                        <div className="font-semibold text-green-600 mb-1">
-                          {slot.startTime} {slot.endTime && `${slot.endTime}`}
-                        </div>
-                        {slot.note && (
-                          <div className="text-xs text-green-600 italic">
-                            {slot.note}
+              ) : (
+                <>
+                  {/* Show Available Slots */}
+                  {availableSlots.length > 0 && (
+                    <div className="mb-6">
+                      <h4 className="text-md font-medium text-green-600 mb-2">
+                        ✅ Available Time Slots:
+                      </h4>
+                      <div className="space-y-2 max-h-40 overflow-y-auto">
+                        {availableSlots.map((slot, index) => (
+                          <div
+                            key={index}
+                            className="bg-green-50 p-3 rounded-lg border-l-4 border-green-500"
+                          >
+                            <div className="font-semibold text-green-600 text-sm">
+                              {slot.startTime} - {slot.endTime}
+                            </div>
+                            <div className="text-xs text-green-500 mt-1">
+                              {slot.note}
+                            </div>
                           </div>
-                        )}
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-6 text-gray-500">
-                    <div className="text-3xl mb-2">⏰</div>
-                    <p>Loading availability...</p>
-                  </div>
-                )}
-              </div>
+                    </div>
+                  )}
+
+                  {/* Show Unavailable Slots (Break Times) */}
+                  {unavailableSlots.length > 0 && (
+                    <div className="mb-6">
+                      <h4 className="text-md font-medium text-red-600 mb-2">
+                        🚫 Unavailable Time Slots (Break Times):
+                      </h4>
+                      <div className="space-y-2 max-h-40 overflow-y-auto">
+                        {unavailableSlots.map((slot, index) => (
+                          <div
+                            key={index}
+                            className="bg-red-50 p-3 rounded-lg border-l-4 border-red-500"
+                          >
+                            <div className="font-semibold text-red-600 text-sm">
+                              {slot.startTime} - {slot.endTime}
+                            </div>
+                            <div className="text-xs text-red-500 mt-1">
+                              {slot.note}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Show message if no slots */}
+                  {availableSlots.length === 0 &&
+                    unavailableSlots.length === 0 && (
+                      <div className="text-center py-8 text-gray-500">
+                        <div className="text-3xl mb-2">⏰</div>
+                        <p>Loading availability...</p>
+                      </div>
+                    )}
+                </>
+              )}
             </div>
           </div>
         </Modal.Body>
@@ -898,16 +948,17 @@ const ManageCoaches = () => {
           color: #1a4a1a !important;
         }
 
-        /* Unavailable days - Red styling */
-        .react-datepicker__day.unavailable-day {
-          background-color: #fdd4d4 !important;
-          color: #8b0000 !important;
+        /* Disabled days - Gray styling and not clickable */
+        .react-datepicker__day.disabled-day {
+          background-color: #f3f4f6 !important;
+          color: #9ca3af !important;
           border-radius: 50% !important;
+          cursor: not-allowed !important;
         }
         
-        .react-datepicker__day.unavailable-day:hover {
-          background-color: #f8b8b8 !important;
-          color: #660000 !important;
+        .react-datepicker__day.disabled-day:hover {
+          background-color: #f3f4f6 !important;
+          color: #9ca3af !important;
         }
 
         /* Selected date styling */
@@ -921,13 +972,19 @@ const ManageCoaches = () => {
           color: white !important;
         }
 
-        .react-datepicker__day--selected.unavailable-day {
-          background-color: #dc2626 !important;
-          color: white !important;
+        /* Ensure disabled dates can't be selected */
+        .react-datepicker__day--disabled {
+          background-color: #f3f4f6 !important;
+          color: #9ca3af !important;
+          cursor: not-allowed !important;
+        }
+        
+        .react-datepicker__day--disabled:hover {
+          background-color: #f3f4f6 !important;
+          color: #9ca3af !important;
         }
       `}</style>
     </div>
   );
 };
-
 export default ManageCoaches;
