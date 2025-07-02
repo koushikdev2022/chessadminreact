@@ -21,7 +21,7 @@ const ManageCourses = () => {
 
   useEffect(() => {
     dispatch(getAllCourse()).then((res) => {
-      setCourseId(res)
+      // setCourseId(res)
       console.log('res', res)
     })
   }, [])
@@ -33,8 +33,9 @@ const ManageCourses = () => {
   const handleEdit = () => {
     console.log("edit")
   }
-  const handleCourseDetails = () => {
-    navigate('/course-details')
+  const handleCourseDetails = (id) => {
+    // console.log("id",id)
+    navigate(`/course-details/${id}`)
   }
 
   const [columnDefs] = useState([
@@ -57,9 +58,9 @@ const ManageCourses = () => {
     {
       headerName: 'Details',
       field: 'Details',
-      cellRenderer: () => (
+      cellRenderer: (params) => (
         <div className="flex justify-start items-center h-full">
-          <Button size="sm" color="success" onClick={handleCourseDetails}>
+          <Button size="sm" color="success" onClick={()=>handleCourseDetails(params.data.id)}>
             Details
           </Button>
         </div>

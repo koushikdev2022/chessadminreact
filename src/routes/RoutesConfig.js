@@ -316,7 +316,7 @@ const allRoutes = [
     ],
   },
   {
-    path: '/course-details',
+    path: '/course-details/:id',
     element: <InsideLayout />,
     children: [
       {
