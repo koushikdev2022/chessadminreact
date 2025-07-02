@@ -4,7 +4,14 @@ import { FaRegImage } from "react-icons/fa";
 import Select from "react-select";
 import { Controller } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { addCourseStep1, addCourseStep2, courseLevelDropdown, courseTagsDropdown, searchLession, searchModule } from "../../Reducer/CourseSlice";
+import {
+  addCourseStep1,
+  addCourseStep2,
+  courseLevelDropdown,
+  courseTagsDropdown,
+  searchLession,
+  searchModule,
+} from "../../Reducer/CourseSlice";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
@@ -145,7 +152,6 @@ const AddCourseStep2 = ({ onBack, levelId, course_id }) => {
                 console.log("res", res)
                 if (res?.payload?.status_code === 200) {
                 toast.success(res?.payload?.message);
-                onNext();
             } else {
                 toast.error(res?.payload?.response?.data?.message);
             }
@@ -301,8 +307,11 @@ const AddCourseStep2 = ({ onBack, levelId, course_id }) => {
                     </form>
                 </div>
             </div>
-        </>
-    )
+          
+          
+         
+    </>
+  );
 };
 
 export default AddCourseStep2;

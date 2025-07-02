@@ -23,12 +23,12 @@ const LevelList = () => {
   const StatusCellRenderer = (props) => {
     const isActive = props.value === 1;
     const statusText = isActive ? "Active" : "Inactive";
-    const statusColor = isActive ? "#10B981" : "#EF4444"; // Green for active, Red for inactive
+    const statusColor = isActive ? "#52b69a" : "#EF4444"; // Green for active, Red for inactive
 
     return (
       <div className="flex items-center h-full">
         <span
-          className="px-3 py-1 rounded-full text-white text-sm font-medium"
+          className="px-3 py-1 rounded-md text-white text-sm font-medium"
           style={{ backgroundColor: statusColor }}
         >
           {statusText}
@@ -43,7 +43,7 @@ const LevelList = () => {
       <div className="flex items-center h-full">
         <button
           onClick={() => handleEdit(props.data.id)}
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+          className="bg-black hover:bg-blue-600 text-white px-4 py-1 rounded-md text-sm font-medium transition-colors"
         >
           Edit
         </button>
@@ -119,7 +119,7 @@ const LevelList = () => {
                 <>
                   <Button
                     onClick={() => handleAddLevel()}
-                    className="bg-[#090722] hover:bg-black px-6 py-2 text-white text-base font-semibold flex justify-center items-center rounded-md"
+                    className="bg-[#52b69a] hover:bg-black px-4 py-1 text-white text-base font-semibold flex justify-center items-center rounded-md"
                   >
                     Add Level
                   </Button>

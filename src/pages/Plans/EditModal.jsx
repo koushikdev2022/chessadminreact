@@ -54,7 +54,7 @@ const EditModal = ({ openEditModal, setOpenEditModal, editId }) => {
 
   return (
     <Modal show={openEditModal} onClose={() => setOpenEditModal(false)}>
-      <Modal.Header>Edit Plan</Modal.Header>
+      <Modal.Header className="border-0 pb-0">Edit Plan</Modal.Header>
       <Modal.Body>
         <form onSubmit={handleSubmit(onSubmit)} id="edit-plan-form">
           <div className="space-y-4">
@@ -78,16 +78,16 @@ const EditModal = ({ openEditModal, setOpenEditModal, editId }) => {
           </div>
         </form>
       </Modal.Body>
-      <Modal.Footer>
+      <Modal.Footer className="border-0 pt-0">
         <Button
-          className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+          className="focus:outline-none text-white bg-black hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-0.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
           onClick={handleCancel}
         >
           Cancel
         </Button>
         <Button
           onClick={handleUpdateClick} // Changed from type="submit" to onClick handler
-          className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+          className="focus:outline-none text-white bg-[#52b69a] hover:bg-black font-medium rounded-lg text-sm px-4 py-0.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
         >
           Update
         </Button>

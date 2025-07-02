@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Button, TextInput, Label } from "flowbite-react";
-import { ToastContainer } from 'react-toastify';
-import { AgGridReact } from 'ag-grid-react';
-import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-alpine.css';
+import { ToastContainer } from "react-toastify";
+import { AgGridReact } from "ag-grid-react";
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-alpine.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { getAllCourse } from "../../Reducer/CourseSlice";
@@ -65,10 +65,11 @@ const ManageCourses = () => {
         </div>
       )
     }
-  ]);
+  
+  ])
 
   const handleAddCourse = () => {
-    navigate('/add-course')
+    navigate("/add-course");
   };
 
   return (
@@ -80,7 +81,7 @@ const ManageCourses = () => {
             <h2 className="text-2xl font-semibold">Course Details</h2>
             <Button
               onClick={() => handleAddCourse()}
-              className="bg-[#AB54DB] hover:bg-black px-6 py-2 text-white text-base font-semibold flex justify-center items-center rounded-md"
+              className="bg-[#52b69a] hover:bg-black px-4 py-1 text-white text-base font-semibold flex justify-center items-center rounded-md"
             >
               Add Course
             </Button>
@@ -100,6 +101,7 @@ const ManageCourses = () => {
             </div>
 
           }
+         
         </div>
       </div>
 
@@ -148,4 +150,4 @@ const ManageCourses = () => {
   );
 };
 
-export default ManageCourses; 
+export default ManageCourses;

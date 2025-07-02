@@ -159,7 +159,7 @@ const ShowPlanDetailsModal = ({
   return (
     <>
       <Modal show={openDetailsModal} onClose={() => setOpenDetailsModal(false)}>
-        <Modal.Header> Plan Details</Modal.Header>
+        <Modal.Header className="border-0 pb-0"> Plan Details</Modal.Header>
         <Modal.Body>
           <div
             className="ag-theme-alpine"
@@ -186,23 +186,23 @@ const ShowPlanDetailsModal = ({
             </>
           )}
         </Modal.Body>
-        <Modal.Footer></Modal.Footer>
+        {/* <Modal.Footer></Modal.Footer> */}
       </Modal>
 
-      {openAddPlanKeyModal &&
+      {openAddPlanKeyModal && (
         <AddPlanKeyModal
           openAddPlanKeyModal={openAddPlanKeyModal}
           setOpenAddPlanKeyModal={setOpenAddPlanKeyModal}
           detailsId={detailsId}
         />
-      }
+      )}
 
-      {openPlanKeyListModal &&
+      {openPlanKeyListModal && (
         <PlanKeyListModal
           openPlanKeyListModal={openPlanKeyListModal}
           setOpenPlanKeyListModal={setOpenPlanKeyListModal}
         />
-      }
+      )}
     </>
   );
 };
