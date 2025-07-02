@@ -13,11 +13,11 @@ import { useSelector } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 
 const AddCourseStep1 = ({ onNext, setLevelId, setCourseId }) => {
-    const dispatch = useDispatch();
-    const [learningOutcomes, setLearningOutcomes] = useState(["", ""]);
-    const [file, setFile] = useState(null);
-    const [progress, setProgress] = useState(100);
-    const [nextStepData, setNextStepData] = useState();
+  const dispatch = useDispatch();
+  const [learningOutcomes, setLearningOutcomes] = useState(["", ""]);
+  const [file, setFile] = useState(null);
+  const [progress, setProgress] = useState(100);
+  const [nextStepData, setNextStepData] = useState();
 
   const {
     courseTagsDropdownData,
@@ -75,17 +75,17 @@ const AddCourseStep1 = ({ onNext, setLevelId, setCourseId }) => {
   const onSubmit = (data) => {
     console.log("add course data", data);
 
-    const input = data.course_duration_input.trim();
-    const match = input.match(/^(\d+)\s*([a-zA-Z]+)$/);
+    // const input = data.course_duration_input.trim();
+    // const match = input.match(/^(\d+)\s*([a-zA-Z]+)$/);
 
-    if (!match) {
-      toast.error(
-        "Invalid duration format. Use something like '3 months' or '2weeks'."
-      );
-      return;
-    }
+    // if (!match) {
+    //   toast.error(
+    //     "Invalid duration format. Use something like '3 months' or '2weeks'."
+    //   );
+    //   return;
+    // }
 
-    const [, number, unit] = match;
+    // const [, number, unit] = match;
 
     const tagIds = data?.course_tags?.map((tag) => tag.value);
 
@@ -94,8 +94,8 @@ const AddCourseStep1 = ({ onNext, setLevelId, setCourseId }) => {
     formData.append("course_sub_title", data?.course_sub_title);
     formData.append("course_tags", JSON.stringify(tagIds));
     formData.append("course_level_id", data?.course_level_id);
-    formData.append("course_duration", number);
-    formData.append("course_duration_str", unit);
+    formData.append("course_duration", data?.course_duration);
+    formData.append("course_duration_str", data?.course_duration_str);
     formData.append("course_description", data?.course_description);
     formData.append(
       "student_will_learn",
@@ -193,7 +193,6 @@ const AddCourseStep1 = ({ onNext, setLevelId, setCourseId }) => {
                   </p>
                 )}
               </div>
-
               <div>
                 <label className="block text-sm font-medium mb-1">
                   Course Level
@@ -217,8 +216,7 @@ const AddCourseStep1 = ({ onNext, setLevelId, setCourseId }) => {
                   </p>
                 )}
               </div>
-
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium mb-1">
                   Course Duration
                 </label>
@@ -237,7 +235,50 @@ const AddCourseStep1 = ({ onNext, setLevelId, setCourseId }) => {
                 )}
               </div>
               <input type="hidden" {...register("course_duration")} />
-              <input type="hidden" {...register("course_duration_str")} />
+              <input type="hidden" {...register("course_duration_str")} /> */}
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">
+                  Course Duration
+                </label>
+
+                <div className="flex gap-2">
+                  {/* Numeric input for duration */}
+                  <input
+                    type="text"
+                    placeholder="Enter Course Duration"
+                    className="w-full border rounded px-4 py-2"
+                    {...register("course_duration", {
+                      required: "Course Sub Title is required",
+                    })}
+                  />
+
+                  {/* Dropdown for duration type */}
+                  <select
+                    className="w-1/2 border rounded px-4 py-2"
+                    {...register("course_duration_str", {
+                      required: "Please select a duration type",
+                    })}
+                  >
+                    <option value="">Select</option>
+                    <option value="week">Week(s)</option>
+                    <option value="month">Month(s)</option>
+                    <option value="year">Year(s)</option>
+                  </select>
+                </div>
+
+                {/* Error display */}
+                {/* {errors?.course_duration_input && (
+                  <p className="text-red-500 text-sm">
+                    {errors.course_duration_input.message}
+                  </p>
+                )} */}
+                {errors?.course_duration_type && (
+                  <p className="text-red-500 text-sm">
+                    {errors.course_duration_type.message}
+                  </p>
+                )}
+              </div>
             </div>
 
             <div className="mb-4">
