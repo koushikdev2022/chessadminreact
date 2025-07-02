@@ -11,6 +11,12 @@
   },
   "dependencies": {
     "@betrue/react-elementor": "^1.2.5",
+    "@fullcalendar/common": "^5.11.5",
+    "@fullcalendar/daygrid": "^6.1.18",
+    "@fullcalendar/google-calendar": "^6.1.18",
+    "@fullcalendar/interaction": "^6.1.18",
+    "@fullcalendar/react": "^6.1.18",
+    "@fullcalendar/timegrid": "^6.1.18",
     "@reduxjs/toolkit": "^2.2.6",
     "@stripe/react-stripe-js": "^2.8.0",
     "@stripe/stripe-js": "^4.6.0",
