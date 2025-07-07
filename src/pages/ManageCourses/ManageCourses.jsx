@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Button, TextInput, Label } from "flowbite-react";
+import { Modal, Button, TextInput, Label, ToggleSwitch } from "flowbite-react";
 import { ToastContainer } from "react-toastify";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
@@ -19,6 +19,8 @@ const ManageCourses = () => {
   const { loading, allCourseData } = useSelector((state) => state?.courses);
 
   const [courseId, setCourseId] = useState();
+  const [switchStatus, setSwitchStatus] = useState(false);
+
 
   useEffect(() => {
     dispatch(getAllCourse()).then((res) => {
@@ -38,6 +40,21 @@ const ManageCourses = () => {
     // console.log("id",id)
     navigate(`/course-details/${id}`);
   };
+  
+  const handleAddCourse = () => {
+    navigate("/add-course");
+  };
+
+  const handleStatus = (id,status) => {
+    console.log("rid",id)
+    if (status) {
+      alert("Status changed to inactive")
+    }else{
+      setSwitchStatus(true)
+      alert("Status changed to active")
+
+    }
+  }
 
   const [columnDefs] = useState([
     {
@@ -53,34 +70,46 @@ const ManageCourses = () => {
       filter: true,
     },
     {
-      field: "course_level_id",
+      field: "level",
       headerName: "Course Level",
+      valueFormatter: (params) => params.data?.Level?.level_name || "",
       sortable: true,
       filter: true,
     },
     {
       field: "duration_integer",
       headerName: "Course Duration",
+      valueFormatter: (params) => {
+        const data = params?.data;
+        if (data?.duration_string === 0) {
+          return `${data?.duration_integer} Week(s)`;
+        } else if (data?.duration_string === 1) {
+          return `${data?.duration_integer} Month(s)`;
+        } else {
+          return `${data?.duration_integer} Year(s)`;
+        }
+      },
       sortable: true,
       filter: true,
     },
 
-    {
-      headerName: "Action",
-      field: "Action",
-      cellRenderer: () => (
-        <div className="flex justify-start items-center h-full gap-2">
-          <BiSolidMessageSquareEdit
-            className="text-[#34A0A4] hover:text-black text-2xl text-center cursor-pointer"
-            onClick={handleEdit}
-          />
-          <MdDelete
-            className="text-[#F94141] hover:text-[#ff0000] text-2xl text-center cursor-pointer"
-            onClick={handleDelete}
-          />
-        </div>
-      ),
-    },
+    // {
+    //   headerName: "Action",
+    //   field: "Action",
+    //   cellRenderer: () => (
+    //     <div className="flex justify-start items-center h-full gap-2">
+    //       <BiSolidMessageSquareEdit
+    //         className="text-[#34A0A4] hover:text-black text-2xl text-center cursor-pointer"
+    //         onClick={handleEdit}
+    //       />
+    //       <MdDelete
+    //         className="text-[#F94141] hover:text-[#ff0000] text-2xl text-center cursor-pointer"
+    //         onClick={handleDelete}
+    //       />
+    //     </div>
+    //   ),
+    // },
+
     {
       headerName: "Details",
       field: "Details",
@@ -95,11 +124,25 @@ const ManageCourses = () => {
         </div>
       ),
     },
+    {
+      headerName: "Status",
+      field: "Status",
+      cellRenderer: (params) => (
+        <div className="flex justify-start items-center h-full gap-2">
+         <label className="inline-flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={params?.data?.status}
+                              onChange={() => handleStatus(params?.data?.id,params?.data?.status)}
+                              className="sr-only peer"
+                            />
+                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#52b69a] rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#52b69a] relative"></div>
+                          </label>
+        </div>
+      ),
+    },
   ]);
 
-  const handleAddCourse = () => {
-    navigate("/add-course");
-  };
 
   return (
     <div>

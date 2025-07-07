@@ -18,6 +18,7 @@ const AddCourseStep1 = ({ onNext, setLevelId, setCourseId }) => {
   const [file, setFile] = useState(null);
   const [progress, setProgress] = useState(100);
   const [nextStepData, setNextStepData] = useState();
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const {
     courseTagsDropdownData,
@@ -51,6 +52,7 @@ const AddCourseStep1 = ({ onNext, setLevelId, setCourseId }) => {
     const updated = [...learningOutcomes];
     updated[index] = value;
     setLearningOutcomes(updated);
+    setFieldErrors((prev) => ({ ...prev, [`outcome_${index}`]: undefined }));
   };
 
   const handleRemoveOutcome = (index) => {
@@ -64,15 +66,32 @@ const AddCourseStep1 = ({ onNext, setLevelId, setCourseId }) => {
     if (selected) {
       setFile(selected);
       setProgress(100);
+      setFieldErrors((prev) => ({ ...prev, file: undefined }));
     }
   };
 
   const removeFile = () => {
     setFile(null);
     setProgress(0);
+    setFieldErrors((prev) => ({ ...prev, file: undefined }));
   };
 
   const onSubmit = (data) => {
+    let hasError = false;
+    const newFieldErrors = {};
+    if (!file) {
+      newFieldErrors.file = 'Cover photo is required';
+      hasError = true;
+    }
+    learningOutcomes.forEach((outcome, idx) => {
+      if (!outcome.trim()) {
+        newFieldErrors[`outcome_${idx}`] = 'This field is required';
+        hasError = true;
+      }
+    });
+    setFieldErrors(newFieldErrors);
+    if (hasError) return;
+
     console.log("add course data", data);
 
     // const input = data.course_duration_input.trim();
@@ -140,11 +159,12 @@ const AddCourseStep1 = ({ onNext, setLevelId, setCourseId }) => {
                 className="w-full border rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 {...register("course_title", {
                   required: "Course Title is required",
+                  onChange: () => setFieldErrors((prev) => ({ ...prev, course_title: undefined })),
                 })}
               />
-              {errors?.course_title && (
+              {(errors?.course_title || fieldErrors.course_title) && (
                 <p className="text-red-500 text-sm">
-                  {errors.course_title.message}
+                  {errors.course_title?.message || fieldErrors.course_title}
                 </p>
               )}
             </div>
@@ -159,11 +179,12 @@ const AddCourseStep1 = ({ onNext, setLevelId, setCourseId }) => {
                 className="w-full border rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 {...register("course_sub_title", {
                   required: "Course Sub Title is required",
+                  onChange: () => setFieldErrors((prev) => ({ ...prev, course_sub_title: undefined })),
                 })}
               />
-              {errors?.course_sub_title && (
+              {(errors?.course_sub_title || fieldErrors.course_sub_title) && (
                 <p className="text-red-500 text-sm">
-                  {errors.course_sub_title.message}
+                  {errors.course_sub_title?.message || fieldErrors.course_sub_title}
                 </p>
               )}
             </div>
@@ -184,12 +205,16 @@ const AddCourseStep1 = ({ onNext, setLevelId, setCourseId }) => {
                       isMulti
                       className="react-select-container"
                       classNamePrefix="react-select"
+                      onChange={(val) => {
+                        field.onChange(val);
+                        setFieldErrors((prev) => ({ ...prev, course_tags: undefined }));
+                      }}
                     />
                   )}
                 />
-                {errors?.course_tags && (
+                {(errors?.course_tags || fieldErrors.course_tags) && (
                   <p className="text-red-500 text-sm">
-                    {errors.course_tags.message}
+                    {errors.course_tags?.message || fieldErrors.course_tags}
                   </p>
                 )}
               </div>
@@ -197,24 +222,29 @@ const AddCourseStep1 = ({ onNext, setLevelId, setCourseId }) => {
                 <label className="block text-sm font-medium mb-1">
                   Course Level
                 </label>
-                <select
-                  className="w-full border rounded px-4 py-2"
-                  {...register("course_level_id", {
-                    required: "Course Level is required",
-                  })}
-                >
-                  <option>Select...</option>
-                  {courseLevelDropdownData?.list?.map((level) => (
-                    <option key={level?.id} value={level?.id}>
-                      {level?.level_name}
-                    </option>
-                  ))}
-                </select>
-                {errors?.course_level_id && (
-                  <p className="text-red-500 text-sm">
-                    {errors.course_level_id.message}
-                  </p>
-                )}
+                <div className="flex flex-col ">
+                  <select
+                    className="w-full border rounded px-4 py-2"
+                    {...register("course_level_id", {
+                      required: "Course Level is required",
+                      onChange: () => setFieldErrors((prev) => ({ ...prev, course_level_id: undefined })),
+                    })}
+                  >
+                    <option value="">Select...</option>
+                    {courseLevelDropdownData?.list?.map((level) => (
+                      <option key={level?.id} value={level?.id}>
+                        {level?.level_name}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="min-h-[24px]">
+                    {(errors?.course_level_id || fieldErrors.course_level_id) && (
+                      <p className="text-red-500 text-sm">
+                        {errors.course_level_id?.message || fieldErrors.course_level_id}
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
               {/* <div>
                 <label className="block text-sm font-medium mb-1">
@@ -244,20 +274,32 @@ const AddCourseStep1 = ({ onNext, setLevelId, setCourseId }) => {
 
                 <div className="flex gap-2">
                   {/* Numeric input for duration */}
-                  <input
-                    type="text"
+                 <div className="flex flex-col ">
+                 <input
+                    type="number"
                     placeholder="Enter Course Duration"
                     className="w-full border rounded px-4 py-2"
                     {...register("course_duration", {
-                      required: "Course Sub Title is required",
+                      required: "Course Duration is required",
+                      onChange: () => setFieldErrors((prev) => ({ ...prev, course_duration: undefined })),
                     })}
                   />
+                   <div className="min-h-[24px]">
+                   {(errors?.course_duration || fieldErrors.course_duration) && (
+                  <p className="text-red-500 text-sm">
+                    {errors.course_duration?.message || fieldErrors.course_duration}
+                  </p>
+                )}
+                   </div>
+                 </div>
 
                   {/* Dropdown for duration type */}
+                  <div className="flex flex-col w-[200px]">
                   <select
-                    className="w-1/2 border rounded px-4 py-2"
+                    className="w-full border rounded px-4 py-2"
                     {...register("course_duration_str", {
-                      required: "Please select a duration type",
+                      required: "select duration type",
+                      onChange: () => setFieldErrors((prev) => ({ ...prev, course_duration_str: undefined })),
                     })}
                   >
                     <option value="">Select</option>
@@ -265,6 +307,14 @@ const AddCourseStep1 = ({ onNext, setLevelId, setCourseId }) => {
                     <option value="month">Month(s)</option>
                     <option value="year">Year(s)</option>
                   </select>
+                  <div className="min-h-[24px]">
+                  {(errors?.course_duration_str || fieldErrors.course_duration_str) && (
+                  <p className="text-red-500 text-sm">
+                    {errors.course_duration_str?.message || fieldErrors.course_duration_str}
+                  </p>
+                )}
+                  </div>
+                  </div>
                 </div>
 
                 {/* Error display */}
@@ -273,11 +323,8 @@ const AddCourseStep1 = ({ onNext, setLevelId, setCourseId }) => {
                     {errors.course_duration_input.message}
                   </p>
                 )} */}
-                {errors?.course_duration_type && (
-                  <p className="text-red-500 text-sm">
-                    {errors.course_duration_type.message}
-                  </p>
-                )}
+                
+               
               </div>
             </div>
 
@@ -290,12 +337,13 @@ const AddCourseStep1 = ({ onNext, setLevelId, setCourseId }) => {
                 placeholder="Enter Course Description"
                 className="w-full border rounded px-4 py-2 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
                 {...register("course_description", {
-                  required: "Course Sub Title is required",
+                  required: "Course Description is required",
+                  onChange: () => setFieldErrors((prev) => ({ ...prev, course_description: undefined })),
                 })}
               ></textarea>
-              {errors?.course_description && (
+              {(errors?.course_description || fieldErrors.course_description) && (
                 <p className="text-red-500 text-sm">
-                  {errors.course_description.message}
+                  {errors.course_description?.message || fieldErrors.course_description}
                 </p>
               )}
             </div>
@@ -314,6 +362,9 @@ const AddCourseStep1 = ({ onNext, setLevelId, setCourseId }) => {
                     placeholder="Enter what student will learn"
                     className="w-full border rounded px-4 py-2"
                   />
+                  {fieldErrors[`outcome_${index}`] && (
+                    <p className="text-red-500 text-sm">{fieldErrors[`outcome_${index}`]}</p>
+                  )}
                   {learningOutcomes?.length > 1 && (
                     <button
                       type="button"
@@ -341,7 +392,7 @@ const AddCourseStep1 = ({ onNext, setLevelId, setCourseId }) => {
                 Cover Photo
               </label>
 
-              <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex flex-col md:flex-row gap-4 mb-4">
                 <label className="w-full md:w-1/2 border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center text-center bg-[#f9fafb] cursor-pointer hover:border-[#52b69a]">
                   <input
                     type="file"
@@ -358,6 +409,10 @@ const AddCourseStep1 = ({ onNext, setLevelId, setCourseId }) => {
                     </span>
                   </span>
                 </label>
+
+                {fieldErrors.file && (
+                  <p className="text-red-500 text-sm">{fieldErrors.file}</p>
+                )}
 
                 {file && (
                   <div className="relative flex-1 border rounded-lg p-4">

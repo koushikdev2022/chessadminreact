@@ -3,6 +3,8 @@ import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { courseDetails } from '../../Reducer/CourseSlice';
+import pdfIcon from '../../assets/imagesource/pdf-download-2617.png';
+
 
 const CourseDetails = () => {
     const navigate = useNavigate();
@@ -15,10 +17,10 @@ const CourseDetails = () => {
 
     const tagColors = [
         { bg: 'bg-green-100', text: 'text-green-700', border: 'border-green-300' },
-        { bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-300' },
+        // { bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-300' },
         { bg: 'bg-yellow-100', text: 'text-yellow-700', border: 'border-yellow-300' },
-        { bg: 'bg-blue-100', text: 'text-blue-700', border: 'border-blue-300' },
-        { bg: 'bg-purple-100', text: 'text-purple-700', border: 'border-purple-300' },
+        // { bg: 'bg-blue-100', text: 'text-blue-700', border: 'border-blue-300' },
+        // { bg: 'bg-purple-100', text: 'text-purple-700', border: 'border-purple-300' },
         { bg: 'bg-pink-100', text: 'text-pink-700', border: 'border-pink-300' },
         { bg: 'bg-indigo-100', text: 'text-indigo-700', border: 'border-indigo-300' },
     ];
@@ -32,6 +34,26 @@ const CourseDetails = () => {
             console.log('res', res)
         })
     }, [])
+
+    const formatCourseDuration = () => {
+        if (courseDetailsData?.duration_string === 0) {
+            return `${courseDetailsData?.duration_integer} Week(s)`;
+        } else if (courseDetailsData?.duration_string === 1) {
+            return `${courseDetailsData?.duration_integer} Month(s)`;
+        } else {
+            return `${courseDetailsData?.duration_integer} Year(s)`;
+        }
+    };
+
+    const formatModuleDuration = (mod) => {
+        if (mod?.duration_string === 0) {
+            return `${mod?.duration_integer} Week(s)`;
+        } else if (mod?.duration_string === 1) {
+            return `${mod?.duration_integer} Month(s)`;
+        } else {
+            return `${mod?.duration_integer} Year(s)`;
+        }
+    };
 
     const handleFileOpen = (url) => {
         // navigate(`/${url}`)
@@ -52,28 +74,27 @@ const CourseDetails = () => {
                             {/* Course Title & Subtitle */}
                             <div className='w-1/3'>
                                 <div className="font-semibold text-lg mb-1">Course Title</div>
-                                <div className="text-gray-700 mb-4">{courseDetailsData?.title || 'N/A'}</div>
+                                <div className="text-gray-700 mb-4 break-words">{courseDetailsData?.title || 'N/A'}</div>
 
                             </div>
                             <div className='w-1/3'>
                                 <div className="font-semibold text-lg mb-1">Course Subtitle</div>
-                                <div className="text-gray-500">{courseDetailsData?.sub_title || 'N/A'}</div>
+                                <div className="text-gray-500 break-words">{courseDetailsData?.sub_title || 'N/A'}</div>
                             </div>
                             {/* Cover Photo */}
                             <div className='w-1/3'>
                                 <div className="font-semibold text-lg mb-1">Cover Photo</div>
                                 <div className="flex items-center mt-2">
-                                    <div className="flex items-center border rounded-lg p-4 bg-gray-50 w-[21rem]">
-                                        <span className="mr-3 text-2xl text-gray-400">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5V6.75A2.25 2.25 0 015.25 4.5h13.5A2.25 2.25 0 0121 6.75v10.5M3 16.5A2.25 2.25 0 005.25 18.75h13.5A2.25 2.25 0 0021 16.5M3 16.5l4.72-4.72a2.25 2.25 0 013.18 0l2.09 2.09m0 0l.72-.72a2.25 2.25 0 013.18 0L21 16.5m-8.25-2.25h.008v.008H12v-.008z" />
-                                            </svg>
-                                        </span>
-                                        <div>
-                                            <div className="font-medium text-gray-700">KDP Course Image .Jpg</div>
-                                            <div className="text-xs text-gray-500">3.8 MB</div>
+                                   {
+                                    courseDetailsData?.CourseBanner?.map(x=>(
+                                        <div className="flex items-center border rounded-lg p-4 bg-gray-50 w-[21rem] cursor-pointer " key={x?.id} onClick={() => handleFileOpen(x?.banner_url)}>
+                                            <img src={x?.banner_url} alt="Course Cover" className="w-16 h-16 object-cover rounded mr-4" />
+                                            <div>
+                                                <div className="font-medium text-gray-700">Course Image</div>
+                                            </div>
                                         </div>
-                                    </div>
+                                    ))
+                                   }
                                 </div>
                             </div>
 
@@ -101,12 +122,12 @@ const CourseDetails = () => {
                             {/* Course Level*/}
                             <div className='w-1/3'>
                                 <div className="font-semibold text-lg mb-1">Course Level</div>
-                                <div className="text-gray-700">Basic Level</div>
+                                <div className="text-gray-700">{courseDetailsData?.Level?.level_name}</div>
                             </div>
                             {/* Course duration */}
                             <div className='w-1/3'>
                                 <div className="font-semibold text-lg mb-1">Course Duration</div>
-                                <div className="text-gray-700">xxx</div>
+                                <div className="text-gray-700">{formatCourseDuration()}</div>
                             </div>
 
                         </div>
@@ -114,7 +135,7 @@ const CourseDetails = () => {
                             {/* Course Description */}
                             <div className='w-1/2'>
                                 <div className="font-semibold text-lg mb-1">Course Description</div>
-                                <div className="text-gray-700 text-wrap">
+                                <div className="text-gray-700 break-words">
                                     {courseDetailsData?.course_description || 'N/A'}
                                 </div>
                             </div>
@@ -125,10 +146,10 @@ const CourseDetails = () => {
                                     {/* What Students Will Learn */}
                                     <div >
                                         <div className="font-semibold text-lg mb-2">What Students will learn?</div>
-                                        <ul className="list-disc ml-6 text-gray-700 space-y-1">
+                                        <ul className="list-disc ml-6 text-gray-700 space-y-1 break-words">
                                             {
                                                 courseDetailsData?.student_will_learn?.map(x => (
-                                                    <li>{x?.name || 'N/A'}</li>
+                                                    <li key={x?.id}>{x?.name || 'N/A'}</li>
                                                 ))
                                             }
                                         </ul>
@@ -143,42 +164,44 @@ const CourseDetails = () => {
                         <div className="flex justify-between items-center gap-16 mb-10">
 
                             {/* Module Details */}
-                            <div>
-                                {courseDetailsData?.CourseModuleMaps?.map((mod) => (
-                                    <div key={mod} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center pb-4 ">
-                                        <div>
-                                            <div className="font-semibold">Module Name</div>
-                                            <div className="text-gray-700 text-sm">{mod?.Topic?.topic_name}</div>
+                            <div className="w-full">
+                                {courseDetailsData?.CourseModuleMaps?.map((mod, modIdx) => (
+                                    <div key={modIdx} className="mb-8 p-4 border rounded-xl bg-gray-50">
+                                        <div className="flex flex-wrap justify-between gap-8 mb-4">
+                                            <div>
+                                                <div className="font-semibold">Module Name</div>
+                                                <div className="text-gray-700 text-sm">{mod?.Topic?.topic_name}</div>
+                                            </div>
+                                            <div>
+                                                <div className="font-semibold">Module Duration</div>
+                                                <div className="text-gray-700 text-sm">{formatModuleDuration(mod)}</div>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <div className="font-semibold">Lesson 1-1</div>
-                                            <div className="text-gray-700 text-sm">{mod?.Lessions?.map(x => (
-                                                x?.Module?.module_name
-                                            ))}</div>
-                                        </div>
-                                        <div>
-                                            <div className="font-semibold">Module Duration</div>
-                                            <div className="text-gray-700 text-sm">2 hours</div>
-                                        </div>
-                                        <div >
-                                            <div className="font-semibold">Homework File</div>
-                                            {mod?.Lessions?.map(x => (
-                                                x?.Homeworks?.map(hfile => (
-                                                    <div className="flex items-center border rounded-lg p-3 bg-gray-50 mt-1 overflow-hidden cursor-pointer" onClick={() => handleFileOpen(hfile?.homework_url)}>
-                                                        <span className="mr-2 text-[20px] text-gray-400" >
-                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5V6.75A2.25 2.25 0 015.25 4.5h13.5A2.25 2.25 0 0121 6.75v10.5M3 16.5A2.25 2.25 0 005.25 18.75h13.5A2.25 2.25 0 0021 16.5M3 16.5l4.72-4.72a2.25 2.25 0 013.18 0l2.09 2.09m0 0l.72-.72a2.25 2.25 0 013.18 0L21 16.5m-8.25-2.25h.008v.008H12v-.008z" />
-                                                            </svg>
-                                                        </span>
-                                                        <div >
-                                                            <div className="font-medium text-gray-700 text-[10px]">{hfile?.homework_name}</div>
-                                                            <div className="text-xs text-gray-500">3.8 MB</div>
-                                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            {mod?.Lessions?.map((lesson, lessonIdx) => (
+                                                <div key={lessonIdx} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                                                    <div className="font-semibold text-base mb-2">Lesson 1-1 <span className="font-normal mx-2">:</span> <span className="font-normal">{lesson?.Module?.module_name}</span></div>
+                                                    <div>
+                                                        <div className="font-medium text-sm  mb-2">Homework File{lesson?.Homeworks?.length > 1 ? 's' : ''}</div>
+                                                        {lesson?.Homeworks?.length > 0 ? (
+                                                            <div className="space-y-2">
+                                                                {lesson?.Homeworks?.map((hfile, hIdx) => (
+                                                                    <div key={hIdx} className="flex items-center border rounded-lg p-3 bg-gray-50 hover:bg-gray-100 transition cursor-pointer overflow-hidden" onClick={() => handleFileOpen(hfile?.homework_url)}>
+                                                                        <span className="mr-2 text-[20px] text-gray-400" >
+                                                                            <img src={pdfIcon} alt="pdf" className="w-7 h-7" />
+                                                                        </span>
+                                                                        <div>
+                                                                            <div className="font-medium text-gray-700 text-xs ">{hfile?.homework_name}</div>
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        ) : (
+                                                            <div className="text-gray-400 text-sm italic">No homework files uploaded.</div>
+                                                        )}
                                                     </div>
-                                                ))
-
+                                                </div>
                                             ))}
-
                                         </div>
                                     </div>
                                 ))}
