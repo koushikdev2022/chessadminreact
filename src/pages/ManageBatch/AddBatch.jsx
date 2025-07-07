@@ -17,7 +17,7 @@ import {
   courseListForBatch,
   eligibleCoach,
 } from "../../Reducer/BatchSlice";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 
 const AddBatch = () => {
   const dispatch = useDispatch();
@@ -27,7 +27,9 @@ const AddBatch = () => {
     (state) => state?.coach
   );
 
-  const { courseData, coachesData } = useSelector((state) => state.batch);
+  const { courseData, coachesData, addBatchLoading } = useSelector(
+    (state) => state.batch
+  );
 
   const [formData, setFormData] = useState({
     batchName: "",
@@ -203,6 +205,11 @@ const AddBatch = () => {
         };
         dispatch(addBatch(addBatchPayload)).then((res) => {
           console.log("res", res);
+          if (res?.payload?.status_code === 201) {
+            nevigate("/manage-batch");
+          } else {
+            toast.error("something went wrong");
+          }
         });
       } else if (res?.payload?.response?.data?.status_code === 422) {
         const errorMessages = res?.payload?.response?.data?.message;
@@ -213,6 +220,7 @@ const AddBatch = () => {
 
   return (
     <div>
+      <ToastContainer />
       <div className="min-h-screen bg-gray-100 field_area">
         <div className="max-w-full mx-auto p-6 bg-white shadow rounded-xl">
           <div className="flex justify-between items-center mb-4">
@@ -220,7 +228,7 @@ const AddBatch = () => {
           </div>
           <div className="space-y-4 popup_section">
             <div className="flex gap-4">
-              <div className="w-4/12">
+              {/* <div className="w-4/12">
                 <div className="mb-1 block">
                   <Label value="Batch name" />
                 </div>
@@ -233,7 +241,7 @@ const AddBatch = () => {
                   }
                   required
                 />
-              </div>
+              </div> */}
               <div className="w-4/12">
                 <div className="mb-1 block">
                   <Label value="Course Name" />
@@ -274,8 +282,6 @@ const AddBatch = () => {
                   })}
                 </Select>
               </div>
-            </div>
-            <div className="flex gap-4">
               <div className="w-4/12">
                 <div className="mb-1 block">
                   <Label value="Batch Coach" />
@@ -304,6 +310,36 @@ const AddBatch = () => {
                 {console.log("error", error)}
                 {error && <p className="text-red-600">{error}</p>}
               </div>
+            </div>
+            <div className="flex gap-4">
+              {/* <div className="w-4/12">
+                <div className="mb-1 block">
+                  <Label value="Batch Coach" />
+                </div>
+                <Select
+                  disabled={!isCoachDropdownEnabled}
+                  value={formData.coachId}
+                  onChange={(e) => handleFormChange("coachId", e.target.value)}
+                  className={
+                    !isCoachDropdownEnabled ? "cursor-not-allowed" : ""
+                  }
+                >
+                  <option value="">
+                    {isCoachLoading
+                      ? "Loading coaches..."
+                      : !isCoachDropdownEnabled
+                      ? "Select Course & RM first"
+                      : "Choose coach"}
+                  </option>
+                  {eligibleCoaches.map((coach) => (
+                    <option key={coach?.id} value={coach?.id}>
+                      {coach?.name || `${coach?.f_name} ${coach?.l_name}`}
+                    </option>
+                  ))}
+                </Select>
+                {console.log("error", error)}
+                {error && <p className="text-red-600">{error}</p>}
+              </div> */}
               <div className="w-4/12">
                 <div className="mb-1 block">
                   <Label value="Country" />
@@ -350,15 +386,12 @@ const AddBatch = () => {
                   <option value={2}>Grouped</option>
                 </Select>
               </div>
-            </div>
-            <div className="flex gap-4">
               <div className="w-4/12">
                 <div className="mb-1 block">
                   <Label value="Batch Duration" />
                 </div>
                 <div className="mb-4">
                   <div className="flex gap-2">
-                    {/* Numeric input for duration */}
                     <input
                       type="text"
                       placeholder="Enter Course Duration"
@@ -370,7 +403,6 @@ const AddBatch = () => {
                       required
                     />
 
-                    {/* Dropdown for duration type */}
                     <select
                       value={formData.durationType}
                       onChange={(e) =>
@@ -386,6 +418,42 @@ const AddBatch = () => {
                   </div>
                 </div>
               </div>
+            </div>
+            <div className="flex gap-4">
+              {/* <div className="w-4/12">
+                <div className="mb-1 block">
+                  <Label value="Batch Duration" />
+                </div>
+                <div className="mb-4">
+                  <div className="flex gap-2">
+                   
+                    <input
+                      type="text"
+                      placeholder="Enter Course Duration"
+                      className="w-full border rounded px-4 py-2"
+                      value={formData.duration}
+                      onChange={(e) =>
+                        handleFormChange("duration", e.target.value)
+                      }
+                      required
+                    />
+
+               
+                    <select
+                      value={formData.durationType}
+                      onChange={(e) =>
+                        handleFormChange("durationType", e.target.value)
+                      }
+                      className="w-1/2 border rounded px-4 py-2"
+                    >
+                      <option value="">Select</option>
+                      <option value={0}>Week(s)</option>
+                      <option value={1}>Month(s)</option>
+                      <option value={2}>Year(s)</option>
+                    </select>
+                  </div>
+                </div>
+              </div> */}
               <div className="w-4/12 flex gap-4">
                 <div>
                   <div className="mb-1 block">
@@ -543,7 +611,7 @@ const AddBatch = () => {
               onClick={handleCreateBatch}
               className="bg-[#52b69a] hover:bg-black px-6 py-2 text-white text-sm font-medium flex justify-center items-center rounded-md"
             >
-              Create Batch
+              {addBatchLoading ? "waiting..." : "Create Batch"}
             </button>
           </div>
         </div>

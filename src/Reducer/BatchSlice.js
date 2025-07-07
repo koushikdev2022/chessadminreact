@@ -43,9 +43,9 @@ export const courseListForBatch = createAsyncThunk(
 
 export const ohBatchList = createAsyncThunk(
     'batchList',
-    async (_, { rejectWithValue }) => {
+    async (user_input, { rejectWithValue }) => {
         try {
-            const response = await api.get('/oparational-head/batch/oh-batch-list');
+            const response = await api.post('/oparational-head/batch/oh-batch-list', user_input);
             if (response?.data?.status_code === 200) {
                 return response.data;
             } else {
@@ -106,6 +106,7 @@ export const batchValidation = createAsyncThunk(
 
 
 const initialState = {
+    addBatchLoading: false,
     loading: false,
     batchData: {},
     error: false,
@@ -123,15 +124,15 @@ const BatchSlice = createSlice(
         extraReducers: (builder) => {
             builder
                 .addCase(addBatch.pending, (state) => {
-                    state.loading = true
+                    state.addBatchLoading = true
                 })
                 .addCase(addBatch.fulfilled, (state, { payload }) => {
-                    state.loading = false
+                    state.addBatchLoading = false
                     state.batchData = payload
                     state.error = false
                 })
                 .addCase(addBatch.rejected, (state, { payload }) => {
-                    state.loading = false
+                    state.addBatchLoading = false
                     state.error = payload
                 })
                 .addCase(courseListForBatch.pending, (state) => {
@@ -170,15 +171,15 @@ const BatchSlice = createSlice(
                     state.error = payload
                 })
                 .addCase(batchValidation.pending, (state) => {
-                    state.loading = true
+                    state.addBatchLoading = true
                 })
                 .addCase(batchValidation.fulfilled, (state, { payload }) => {
-                    state.loading = false
+                    state.addBatchLoading = false
                     state.validateData = payload
                     state.error = false
                 })
                 .addCase(batchValidation.rejected, (state, { payload }) => {
-                    state.loading = false
+                    state.addBatchLoading = false
                     state.error = payload
                 })
 

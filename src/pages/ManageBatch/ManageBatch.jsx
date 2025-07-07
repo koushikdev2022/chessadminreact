@@ -74,20 +74,20 @@ const ManageBatch = () => {
         sortable: true,
         filter: true,
       },
-      {
-        headerName: "Actions",
-        field: "actions",
-        cellRenderer: (params) => (
-          <div className="flex gap-2">
-            <Button size="xs">
-              <BiSolidMessageSquareEdit className="text-[#34A0A4] hover:text-black text-xl" />
-            </Button>
-            <Button size="xs">
-              <MdDelete className="text-[#F94141] hover:text-[#ff0000] text-xl" />
-            </Button>
-          </div>
-        ),
-      },
+      // {
+      //   headerName: "Actions",
+      //   field: "actions",
+      //   cellRenderer: (params) => (
+      //     <div className="flex gap-2">
+      //       <Button size="xs">
+      //         <BiSolidMessageSquareEdit className="text-[#34A0A4] hover:text-black text-xl" />
+      //       </Button>
+      //       <Button size="xs">
+      //         <MdDelete className="text-[#F94141] hover:text-[#ff0000] text-xl" />
+      //       </Button>
+      //     </div>
+      //   ),
+      // },
       {
         headerName: "Details",
         field: "details",
