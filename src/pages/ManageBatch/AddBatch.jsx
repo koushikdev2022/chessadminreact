@@ -1,4 +1,10 @@
-import { Datepicker, Label, Select, TextInput } from "flowbite-react";
+import {
+  Datepicker,
+  FileInput,
+  Label,
+  Select,
+  TextInput,
+} from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import { BsFillPlusCircleFill } from "react-icons/bs";
 import { FaCircleMinus } from "react-icons/fa6";
@@ -16,8 +22,10 @@ import {
   batchValidation,
   courseListForBatch,
   eligibleCoach,
+  uploadBannerImage,
 } from "../../Reducer/BatchSlice";
 import { toast, ToastContainer } from "react-toastify";
+import CoachCalender from "./CoachCalender";
 
 const AddBatch = () => {
   const dispatch = useDispatch();
@@ -27,9 +35,13 @@ const AddBatch = () => {
     (state) => state?.coach
   );
 
-  const { courseData, coachesData, addBatchLoading } = useSelector(
-    (state) => state.batch
-  );
+  const { courseData, coachesData, addBatchLoading, coachDetailsData } =
+    useSelector((state) => state.batch);
+  const [isCoachSelected, setIsCoachSelected] = useState(false);
+  const [openCalendar, setOpenCalender] = useState(false);
+  const [coachId, setCoachId] = useState(null);
+  const [bannerFile, setBannerFile] = useState(null);
+  const [bannerPreview, setBannerPreview] = useState(null);
 
   const [formData, setFormData] = useState({
     batchName: "",
@@ -44,6 +56,10 @@ const AddBatch = () => {
     endDate: "",
     batchLimit: "",
   });
+  const handleOpenCalender = () => {
+    setOpenCalender(true);
+    setCoachId(formData.coachId);
+  };
 
   const [eligibleCoaches, setEligibleCoaches] = useState([]);
   const [isCoachLoading, setIsCoachLoading] = useState(false);
@@ -51,6 +67,7 @@ const AddBatch = () => {
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
   const [error, setError] = useState();
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     dispatch(getRMForCoach());
@@ -106,6 +123,9 @@ const AddBatch = () => {
         setEligibleCoaches(res?.payload?.data || []);
         setIsCoachDropdownEnabled(true);
         setIsCoachLoading(false);
+        if (res?.payload?.data?.length > 0) {
+          setError("");
+        }
         if (res?.payload?.data?.length <= 0) {
           setError("Coach not found");
         }
@@ -126,10 +146,18 @@ const AddBatch = () => {
         [field]: value,
       };
 
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [field]: null,
+      }));
+
       if (field === "courseId" || field === "rmId") {
         updated.coachId = "";
         setIsCoachDropdownEnabled(false);
         setEligibleCoaches([]);
+      }
+      if (field === "coachId") {
+        setIsCoachSelected(!!value); // true if coachId is selected
       }
 
       return updated;
@@ -147,6 +175,7 @@ const AddBatch = () => {
     console.log("Formatted Start Date:", formattedDate);
 
     setFormData((prev) => ({ ...prev, startDate: formattedDate }));
+    setErrors((prev) => ({ ...prev, startDate: null }));
   };
 
   const handleEndDateChange = (date) => {
@@ -158,6 +187,7 @@ const AddBatch = () => {
     console.log("Formatted End Date:", formattedDate);
 
     setFormData((prev) => ({ ...prev, endDate: formattedDate }));
+    setErrors((prev) => ({ ...prev, endDate: null }));
   };
   useEffect(() => {
     if (formData.courseId && formData.rmId) {
@@ -166,6 +196,45 @@ const AddBatch = () => {
   }, [formData.courseId, formData.rmId]);
 
   const handleCreateBatch = () => {
+    console.log("Hello");
+
+    const newErrors = {};
+
+    if (!formData.courseId) newErrors.courseId = "Course name is required";
+    if (!formData.rmId) newErrors.rmId = "Relationship Manager is required";
+    if (!formData.coachId) newErrors.coachId = "Coach is required";
+    if (!formData.countryId) newErrors.countryId = "Country is required";
+    if (!formData.batchType) newErrors.batchType = "Batch type is required";
+    if (!formData.duration) newErrors.duration = "Duration is required";
+    if (!formData.durationType && formData.durationType !== "0")
+      newErrors.durationType = "Duration type is required";
+    if (!formData.startDate) newErrors.startDate = "Start date is required";
+    if (!formData.endDate) newErrors.endDate = "End date is required";
+    if (formData.batchType !== "1" && !formData.batchLimit)
+      newErrors.batchLimit = "Batch limit is required";
+
+    // Check at least one valid class slot
+    const hasInvalidSlot = slots.some((slot) => {
+      return (
+        !slot.day ||
+        !slot.startTime ||
+        !slot.endTime ||
+        slot.startMeridian === "" ||
+        slot.endMeridian === ""
+      );
+    });
+    if (hasInvalidSlot)
+      newErrors.classSchedule = "All class schedule fields are required";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    // if validation passes, clear errors and proceed
+    setErrors({});
+    console.log("hi");
+
     const payload = {
       coach_id: parseInt(formData.coachId) || 1,
       course_id: parseInt(formData.courseId),
@@ -184,12 +253,17 @@ const AddBatch = () => {
       console.log("Res:", res);
       // Optionally navigate or show success message
       if (res?.payload?.status_code === 200) {
+        console.log(
+          "parseInt(formData.durationType)",
+          parseInt(formData.durationType)
+        );
+
         const addBatchPayload = {
           course_id: parseInt(formData.courseId) || null,
           country_id: parseInt(formData.countryId) || null,
           batch_type: parseInt(formData.batchType) || null,
           duration_day: parseInt(formData.duration) || null,
-          interval: parseInt(formData.durationType) || null,
+          interval: parseInt(formData.durationType),
           rm_id: parseInt(formData.rmId) || null,
           no_student: parseInt(formData.batchLimit) || null,
           coach_id: parseInt(formData.coachId) || null,
@@ -206,6 +280,12 @@ const AddBatch = () => {
         dispatch(addBatch(addBatchPayload)).then((res) => {
           console.log("res", res);
           if (res?.payload?.status_code === 201) {
+            if (bannerFile) {
+              const formData = new FormData();
+              formData.append("batch_id", res?.payload?.id);
+              formData.append("image", bannerFile);
+              dispatch(uploadBannerImage(formData));
+            }
             nevigate("/manage-batch");
           } else {
             toast.error("something went wrong");
@@ -225,6 +305,17 @@ const AddBatch = () => {
         <div className="max-w-full mx-auto p-6 bg-white shadow rounded-xl">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-semibold">Create New batch</h2>
+            {isCoachSelected && (
+              <button
+                className="bg-[#52b69a] hover:bg-black px-6 py-2 text-white text-sm font-medium flex justify-center items-center rounded-md"
+                onClick={() =>
+                  // console.log("Selected Coach ID:", formData.coachId)
+                  handleOpenCalender()
+                }
+              >
+                Check Coach Availability
+              </button>
+            )}
           </div>
           <div className="space-y-4 popup_section">
             <div className="flex gap-4">
@@ -261,6 +352,9 @@ const AddBatch = () => {
                     );
                   })}
                 </Select>
+                {errors.courseId && (
+                  <p className="text-red-500 text-sm">{errors.courseId}</p>
+                )}
               </div>
               <div className="w-4/12">
                 <div className="mb-1 block">
@@ -281,6 +375,9 @@ const AddBatch = () => {
                     );
                   })}
                 </Select>
+                {errors.rmId && (
+                  <p className="text-red-500 text-sm">{errors.rmId}</p>
+                )}
               </div>
               <div className="w-4/12">
                 <div className="mb-1 block">
@@ -307,7 +404,9 @@ const AddBatch = () => {
                     </option>
                   ))}
                 </Select>
-                {console.log("error", error)}
+                {errors.coachId && (
+                  <p className="text-red-500 text-sm">{errors.coachId}</p>
+                )}
                 {error && <p className="text-red-600">{error}</p>}
               </div>
             </div>
@@ -362,6 +461,9 @@ const AddBatch = () => {
                     );
                   })}
                 </Select>
+                {errors.countryId && (
+                  <p className="text-red-500 text-sm">{errors.countryId}</p>
+                )}
               </div>
               <div className="w-4/12">
                 <div className="mb-1 block">
@@ -385,6 +487,9 @@ const AddBatch = () => {
                   <option value={1}>Individual</option>
                   <option value={2}>Grouped</option>
                 </Select>
+                {errors.batchType && (
+                  <p className="text-red-500 text-sm">{errors.batchType}</p>
+                )}
               </div>
               <div className="w-4/12">
                 <div className="mb-1 block">
@@ -400,8 +505,10 @@ const AddBatch = () => {
                       onChange={(e) =>
                         handleFormChange("duration", e.target.value)
                       }
-                      required
                     />
+                    {errors.duration && (
+                      <p className="text-red-500 text-sm">{errors.duration}</p>
+                    )}
 
                     <select
                       value={formData.durationType}
@@ -415,6 +522,11 @@ const AddBatch = () => {
                       <option value={1}>Month(s)</option>
                       <option value={2}>Year(s)</option>
                     </select>
+                    {errors.durationType && (
+                      <p className="text-red-500 text-sm">
+                        {errors.durationType}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -463,12 +575,18 @@ const AddBatch = () => {
                     value={startDate}
                     onChange={handleStartDateChange}
                   />
+                  {errors.startDate && (
+                    <p className="text-red-500 text-sm">{errors.startDate}</p>
+                  )}
                 </div>
                 <div>
                   <div className="mb-1 block">
                     <Label value="End Date" />
                   </div>
                   <Datepicker value={endDate} onChange={handleEndDateChange} />
+                  {errors.endDate && (
+                    <p className="text-red-500 text-sm">{errors.endDate}</p>
+                  )}
                 </div>
               </div>
               <div className="w-4/12">
@@ -478,13 +596,15 @@ const AddBatch = () => {
                 <TextInput
                   type="number"
                   placeholder="Enter batch limit"
-                  required
                   value={formData.batchLimit}
                   onChange={(e) =>
                     handleFormChange("batchLimit", e.target.value)
                   }
                   disabled={formData.batchType === "1"}
                 />
+                {errors.batchLimit && (
+                  <p className="text-red-500 text-sm">{errors.batchLimit}</p>
+                )}
               </div>
             </div>
             <div className="flex justify-between items-center mb-4">
@@ -604,16 +724,52 @@ const AddBatch = () => {
                 </>
               );
             })}
+            {errors.classSchedule && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.classSchedule}
+              </p>
+            )}
+            <div className="mb-1 mt-10 block">
+              <Label value="Upload Banner Image" />
+            </div>
+            <div className="w-8/12">
+              <FileInput
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    setBannerFile(file);
+                    setBannerPreview(URL.createObjectURL(file));
+                  }
+                }}
+              />
+              {bannerPreview && (
+                <img
+                  src={bannerPreview}
+                  alt="Preview"
+                  className="mt-4 w-64 h-40 object-cover rounded border"
+                />
+              )}
+            </div>
           </div>
 
           <div className="flex justify-end mt-6">
             <button
+              type="button"
               onClick={handleCreateBatch}
               className="bg-[#52b69a] hover:bg-black px-6 py-2 text-white text-sm font-medium flex justify-center items-center rounded-md"
             >
               {addBatchLoading ? "waiting..." : "Create Batch"}
             </button>
           </div>
+          {openCalendar && (
+            <CoachCalender
+              openCalendar={openCalendar}
+              setOpenCalender={setOpenCalender}
+              coachId={coachId}
+              setCoachId={setCoachId}
+            />
+          )}
         </div>
       </div>
     </div>

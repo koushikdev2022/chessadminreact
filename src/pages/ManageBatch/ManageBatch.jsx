@@ -26,7 +26,7 @@ const ManageBatch = () => {
       name: batch.batch_name || "-",
       student:
         batch?.User?.map((u) => `${u.f_name} ${u.l_name}`).join(", ") || "-",
-      country: batch?.country_id || "-",
+      // country: batch?.country_id || "-",
       limit: `${batch?.student_limit} Students`,
       coach: batch?.Coach
         ? `${batch?.Coach?.f_name} ${batch?.Coach?.l_name}`
@@ -43,19 +43,19 @@ const ManageBatch = () => {
         sortable: true,
         filter: true,
       },
-      {
-        field: "student",
-        headerName: "Batch Students",
-        sortable: true,
-        filter: true,
-        flex: 2,
-      },
-      {
-        field: "country",
-        headerName: "Country",
-        sortable: true,
-        filter: true,
-      },
+      // {
+      //   field: "student",
+      //   headerName: "Batch Students",
+      //   sortable: true,
+      //   filter: true,
+      //   flex: 2,
+      // },
+      // {
+      //   field: "country",
+      //   headerName: "Country",
+      //   sortable: true,
+      //   filter: true,
+      // },
       {
         field: "limit",
         headerName: "Batch Limit",
@@ -100,6 +100,18 @@ const ManageBatch = () => {
           </Button>
         ),
       },
+      {
+        headerName: "Action",
+        field: "action",
+        cellRenderer: (params) => (
+          <Button
+            onClick={() => handleBatchDetails(params?.data?.id)}
+            className="border text-[#52b69a] border-[#52b69a] bg-white hover:bg-[#52b69a] hover:text-white text-sm px-4 py-1"
+          >
+            Add Student
+          </Button>
+        ),
+      },
     ],
     []
   );
@@ -108,8 +120,10 @@ const ManageBatch = () => {
     navigate("/add-batch");
   };
 
-  const handleBatchDetails = () => {
-    navigate("/view-batch-details");
+  const handleBatchDetails = (id) => {
+    navigate("/view-batch-details", {
+      state: { batch_id: id },
+    });
   };
 
   return (

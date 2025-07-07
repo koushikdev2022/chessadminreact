@@ -105,6 +105,48 @@ export const batchValidation = createAsyncThunk(
 )
 
 
+export const getCoachDetails = createAsyncThunk(
+    'getCoachDetails',
+    async (user_input, { rejectWithValue }) => {
+        try {
+            const response = await api.post('/get-coach-details', user_input);
+            if (response?.data?.status_code === 200) {
+                return response.data;
+            } else {
+                if (response?.data?.errors) {
+                    return rejectWithValue(response.data.errors);
+                } else {
+                    return rejectWithValue('Something went wrong.');
+                }
+            }
+        } catch (err) {
+            return rejectWithValue(err);
+        }
+    }
+
+)
+
+export const uploadBannerImage = createAsyncThunk(
+    'uploadBannerImage',
+    async (user_input, { rejectWithValue }) => {
+        try {
+            const response = await api.post('/oparational-head/batch/add-batch-banner', user_input);
+            if (response?.data?.status_code === 201) {
+                return response.data;
+            } else {
+                if (response?.data?.errors) {
+                    return rejectWithValue(response.data.errors);
+                } else {
+                    return rejectWithValue('Something went wrong.');
+                }
+            }
+        } catch (err) {
+            return rejectWithValue(err);
+        }
+    }
+
+)
+
 const initialState = {
     addBatchLoading: false,
     loading: false,
@@ -113,7 +155,10 @@ const initialState = {
     courseData: [],
     batchList: [],
     coachesData: [],
-    validateData: []
+    validateData: [],
+    coachDetailsData: [],
+    bannerImageData: {}
+
 };
 
 const BatchSlice = createSlice(
@@ -179,6 +224,30 @@ const BatchSlice = createSlice(
                     state.error = false
                 })
                 .addCase(batchValidation.rejected, (state, { payload }) => {
+                    state.addBatchLoading = false
+                    state.error = payload
+                })
+                .addCase(getCoachDetails.pending, (state) => {
+                    state.loading = true
+                })
+                .addCase(getCoachDetails.fulfilled, (state, { payload }) => {
+                    state.loading = false
+                    state.coachDetailsData = payload
+                    state.error = false
+                })
+                .addCase(getCoachDetails.rejected, (state, { payload }) => {
+                    state.loading = false
+                    state.error = payload
+                })
+                .addCase(uploadBannerImage.pending, (state) => {
+                    state.addBatchLoading = true
+                })
+                .addCase(uploadBannerImage.fulfilled, (state, { payload }) => {
+                    state.addBatchLoading = false
+                    state.bannerImageData = payload
+                    state.error = false
+                })
+                .addCase(uploadBannerImage.rejected, (state, { payload }) => {
                     state.addBatchLoading = false
                     state.error = payload
                 })

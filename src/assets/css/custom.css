@@ -33,6 +33,39 @@ input {
   height: 1px;
   background: #bababa;
 }
+/* calender Css new ADD */
+
+.fc .available-day {
+  background-color: #bbf7d0 !important;
+  border-radius: 50% !important;
+}
+
+.fc-event.break-time {
+  background-color: red !important;
+  color: red !important;
+  font-weight: 500;
+  font-size: 0.55rem !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: 1rem !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fc-event.class-time {
+  background-color: #092f61 !important;
+  color: #1e40af !important;
+  border: 1px solid #93c5fd;
+  font-size: 0.52rem !important;
+  padding: 0 2px !important;
+  line-height: 1rem !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* calender Css new ADD */
 
 /*  */
 
@@ -63,6 +96,10 @@ input {
   text-align: center;
   padding: 0;
   margin: 0;
+}
+
+.ag-theme-alpine {
+  min-height: 600px !important;
 }
 
 .edit_user_profile_btn span {
@@ -145,7 +182,7 @@ input {
   line-height: 30px;
   font-weight: 500;
   color: #ffffff;
-  background: #52B69A;
+  background: #52b69a;
   border-radius: 12px;
 }
 
@@ -159,7 +196,6 @@ input {
   outline: none;
   box-shadow: none;
 }
-
 
 .multiselect .css-13cymwt-control {
   border-radius: 8px;
@@ -962,7 +998,7 @@ iframe .p-PaymentMethodSelector {
   ul.react-tabs__tab-list
   li.react-tabs__tab.react-tabs__tab--selected {
   border-radius: 10px;
-  background: #AB54DB;
+  background: #ab54db;
   color: #fff;
   font-family: "Inter", sans-serif;
   font-size: 16px;
@@ -1002,8 +1038,8 @@ iframe .p-PaymentMethodSelector {
   background-color: rgba(0, 0, 0, 0.8);
 }
 
-.field_area input[type="text"], 
-.field_area input[type="tel"], 
+.field_area input[type="text"],
+.field_area input[type="tel"],
 .field_area input[type="email"] {
   height: 40px;
   border: #d1d5db 1px solid;
