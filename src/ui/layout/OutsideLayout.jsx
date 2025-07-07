@@ -9,9 +9,9 @@ const OutsideLayout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { subdomain } = useSelector((state) => state?.auth);
-  useEffect(() => {
-    dispatch(getSubdomain());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(getSubdomain());
+  // }, [dispatch]);
 
   console.log("SubDomain: ", subdomain?.data?.[0]?.server_domain);
   // localStorage.setItem("subDomain", subdomain?.data?.[0]?.server_domain);
