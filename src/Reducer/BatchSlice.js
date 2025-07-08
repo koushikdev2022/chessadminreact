@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../store/Api";
 
+
 export const addBatch = createAsyncThunk(
     'addBatch',
     async (userInput, { rejectWithValue }) => {
@@ -147,6 +148,29 @@ export const uploadBannerImage = createAsyncThunk(
 
 )
 
+export const getDaysCoach = createAsyncThunk(
+    'getDaysCoach',
+    async (user_input, { rejectWithValue }) => {
+        try {
+            const response = await api.post('/oparational-head/batch/coach/availability', user_input);
+            if (response?.data?.status_code === 200) {
+                return response.data;
+            } else {
+                if (response?.data?.errors) {
+                    return rejectWithValue(response.data.errors);
+                } else {
+                    return rejectWithValue('Something went wrong.');
+                }
+            }
+        } catch (err) {
+            return rejectWithValue(err);
+        }
+    }
+
+)
+
+
+
 const initialState = {
     addBatchLoading: false,
     loading: false,
@@ -157,7 +181,8 @@ const initialState = {
     coachesData: [],
     validateData: [],
     coachDetailsData: [],
-    bannerImageData: {}
+    bannerImageData: {},
+    daysData: []
 
 };
 
@@ -249,6 +274,18 @@ const BatchSlice = createSlice(
                 })
                 .addCase(uploadBannerImage.rejected, (state, { payload }) => {
                     state.addBatchLoading = false
+                    state.error = payload
+                })
+                .addCase(getDaysCoach.pending, (state) => {
+                    state.loading = true
+                })
+                .addCase(getDaysCoach.fulfilled, (state, { payload }) => {
+                    state.loading = false
+                    state.daysData = payload
+                    state.error = false
+                })
+                .addCase(getDaysCoach.rejected, (state, { payload }) => {
+                    state.loading = false
                     state.error = payload
                 })
 

@@ -1,44 +1,85 @@
-import React, { useState } from "react";
-import { Modal, Button, TextInput, Label } from "flowbite-react";
-import { ToastContainer } from "react-toastify";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { AgGridReact } from "ag-grid-react";
+import { ToastContainer } from "react-toastify";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
+import { getUsers, userActiveDeactive } from "../../Reducer/UserSlice"; // Adjust path
 
 const ManageParents = () => {
-  const [openModal, setOpenModal] = useState(false);
+  const dispatch = useDispatch();
+  const { userData } = useSelector((state) => state?.user);
+  const [rowData, setRowData] = useState([]);
 
-  const [rowData] = useState([
-    {
-      name: "Sample Parent",
-      phone: "+1234567890",
-      email: "parent@example.com",
-      address: "123 Parent Street",
-      country: "United States",
-    },
-  ]);
+  useEffect(() => {
+    dispatch(getUsers());
+  }, []);
 
-  const [columnDefs] = useState([
-    { field: "name", headerName: "Name", sortable: true, filter: true },
-    { field: "phone", headerName: "Phone No", sortable: true, filter: true },
-    { field: "email", headerName: "Email", sortable: true, filter: true },
+  useEffect(() => {
+    if (userData?.data?.length) {
+      const mappedData = userData.data.map((user) => ({
+        id: user.id,
+        f_name: user.f_name,
+        l_name: user.l_name,
+        email: user.email,
+        status: user.status === 1,
+      }));
+      setRowData(mappedData);
+    }
+  }, [userData]);
+
+  const handleToggleStatus = (id, currentStatus) => {
+    const updatedRows = rowData.map((row) =>
+      row.id === id ? { ...row, status: !currentStatus } : row
+    );
+    setRowData(updatedRows);
+    const encodedId = btoa(id.toString()); // Base64 encode the ID
+    dispatch(userActiveDeactive(encodedId)).then((res) => {
+      console.log("res", res);
+    });
+
+    // Optionally call API to update status here
+    // api.patch(`/user/${id}/status`, { status: !currentStatus });
+  };
+
+  const columnDefs = [
     {
-      field: "address",
-      headerName: "Physical Address",
+      headerName: "First Name",
+      field: "f_name",
       sortable: true,
       filter: true,
     },
-    { field: "country", headerName: "Country", sortable: true, filter: true },
     {
-      headerName: "Students",
-      field: "students",
-      cellRenderer: () => (
-        <Button className="border text-[#52b69a] border-[#52b69a] bg-white hover:bg-[#52b69a] hover:text-white text-xl px-6 py-0 my-1">
-          View Students
-        </Button>
-      ),
+      headerName: "Last Name",
+      field: "l_name",
+      sortable: true,
+      filter: true,
     },
-  ]);
+    {
+      headerName: "Email",
+      field: "email",
+      sortable: true,
+      filter: true,
+    },
+    {
+      headerName: "Status",
+      field: "status",
+      cellRenderer: (params) => {
+        const isActive = params.value;
+        return (
+          <label className="inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              checked={isActive}
+              onChange={() => handleToggleStatus(params.data.id, isActive)}
+              className="sr-only peer"
+            />
+            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 rounded-full peer dark:bg-gray-300 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500 relative"></div>
+          </label>
+        );
+      },
+    },
+  ];
 
   return (
     <div>
@@ -47,12 +88,6 @@ const ManageParents = () => {
         <div className="h-full lg:h-screen">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-semibold">User Details</h2>
-            <Button
-              onClick={() => setOpenModal(true)}
-              className="bg-[#52b69a] hover:bg-black px-4 py-1 text-white text-base font-semibold flex justify-center items-center rounded-md"
-            >
-              Add User
-            </Button>
           </div>
           <div
             className="ag-theme-alpine"
@@ -64,82 +99,11 @@ const ManageParents = () => {
               pagination={true}
               paginationPageSize={10}
               domLayout="autoHeight"
+              suppressAutoColumns={true}
             />
           </div>
         </div>
       </div>
-
-      <Modal show={openModal} onClose={() => setOpenModal(false)}>
-        <Modal.Header className="border-0 pb-0">Add New Parent</Modal.Header>
-        <Modal.Body>
-          <div className="space-y-4 popup_section">
-            <div>
-              <div className="mb-1 block">
-                <Label htmlFor="name" value="Parent Name" />
-              </div>
-              <TextInput
-                id="name"
-                type="text"
-                placeholder="Enter parent name"
-                required
-              />
-            </div>
-            <div>
-              <div className="mb-1 block">
-                <Label htmlFor="phone" value="Phone Number" />
-              </div>
-              <TextInput
-                id="phone"
-                type="tel"
-                placeholder="Enter phone number"
-                required
-              />
-            </div>
-            <div>
-              <div className="mb-1 block">
-                <Label htmlFor="email" value="Email" />
-              </div>
-              <TextInput
-                id="email"
-                type="email"
-                placeholder="Enter email"
-                required
-              />
-            </div>
-            <div>
-              <div className="mb-1 block">
-                <Label htmlFor="address" value="Physical Address" />
-              </div>
-              <TextInput
-                id="address"
-                type="text"
-                placeholder="Enter address"
-                required
-              />
-            </div>
-            <div>
-              <div className="mb-1 block">
-                <Label htmlFor="country" value="Country" />
-              </div>
-              <TextInput
-                id="country"
-                type="text"
-                placeholder="Enter country"
-                required
-              />
-            </div>
-          </div>
-        </Modal.Body>
-        <Modal.Footer className="border-0 pt-0">
-          <Button
-            className="bg-[#000000] hover:bg-[#9b1c1c]"
-            onClick={() => setOpenModal(false)}
-          >
-            Cancel
-          </Button>
-          <Button className="bg-[#52b69a] hover:bg-black">Add Parent</Button>
-        </Modal.Footer>
-      </Modal>
     </div>
   );
 };

@@ -36,8 +36,8 @@ input {
 /* calender Css new ADD */
 
 .fc .available-day {
-  background-color: #bbf7d0 !important;
-  border-radius: 50% !important;
+  background-color: #13e75d !important;
+  /* border-radius: 50% !important; */
 }
 
 .fc-event.break-time {
@@ -1076,7 +1076,6 @@ iframe .p-PaymentMethodSelector {
 
 /* Add css on 16th Dec ends here */
 
-
 .no-time-picker::-webkit-calendar-picker-indicator {
   display: none;
   -webkit-appearance: none;
@@ -1085,7 +1084,6 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   display: none;
   -webkit-appearance: none;
 }
-
 
 @media only screen and (max-width: 767px) {
   .header_area nav ul li a.active,

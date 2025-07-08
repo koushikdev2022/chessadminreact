@@ -32,7 +32,7 @@ const ManageBatch = () => {
       coach: batch?.Coach
         ? `${batch?.Coach?.f_name} ${batch?.Coach?.l_name}`
         : "-",
-      manager: "N/A", // Replace with actual RM data if available
+      manager: batch?.Oh?.f_name + batch?.Oh?.l_name, // Replace with actual RM data if available
     }));
   }, [batchList]);
 

@@ -22,6 +22,7 @@ import {
   batchValidation,
   courseListForBatch,
   eligibleCoach,
+  getDaysCoach,
   uploadBannerImage,
 } from "../../Reducer/BatchSlice";
 import { toast, ToastContainer } from "react-toastify";
@@ -31,12 +32,17 @@ const AddBatch = () => {
   const dispatch = useDispatch();
   const nevigate = useNavigate();
 
-  const { coachCountryData, daysData, coachesDatak, rmData } = useSelector(
+  const { coachCountryData, coachesDatak, rmData } = useSelector(
     (state) => state?.coach
   );
 
-  const { courseData, coachesData, addBatchLoading, coachDetailsData } =
-    useSelector((state) => state.batch);
+  const {
+    courseData,
+    coachesData,
+    addBatchLoading,
+    coachDetailsData,
+    daysData,
+  } = useSelector((state) => state.batch);
   const [isCoachSelected, setIsCoachSelected] = useState(false);
   const [openCalendar, setOpenCalender] = useState(false);
   const [coachId, setCoachId] = useState(null);
@@ -195,10 +201,21 @@ const AddBatch = () => {
     }
   }, [formData.courseId, formData.rmId]);
 
+  useEffect(() => {
+    if (formData.coachId) {
+      dispatch(getDaysCoach({ coach_id: formData.coachId }));
+    }
+  }, [dispatch, formData.coachId]);
+  console.log("day_data", daysData);
+  const getTodayDate = () => {
+    const today = new Date();
+    return today.toISOString().split("T")[0];
+  };
   const handleCreateBatch = () => {
     console.log("Hello");
 
     const newErrors = {};
+    const finalStartDate = formData.startDate || getTodayDate();
 
     if (!formData.courseId) newErrors.courseId = "Course name is required";
     if (!formData.rmId) newErrors.rmId = "Relationship Manager is required";
@@ -208,7 +225,7 @@ const AddBatch = () => {
     if (!formData.duration) newErrors.duration = "Duration is required";
     if (!formData.durationType && formData.durationType !== "0")
       newErrors.durationType = "Duration type is required";
-    if (!formData.startDate) newErrors.startDate = "Start date is required";
+    // if (!formData.startDate) newErrors.startDate = "Start date is required";
     if (!formData.endDate) newErrors.endDate = "End date is required";
     if (formData.batchType !== "1" && !formData.batchLimit)
       newErrors.batchLimit = "Batch limit is required";
@@ -238,7 +255,7 @@ const AddBatch = () => {
     const payload = {
       coach_id: parseInt(formData.coachId) || 1,
       course_id: parseInt(formData.courseId),
-      start_date: formData.startDate,
+      start_date: finalStartDate,
       end_date: formData.endDate,
       class_schedule: slots.map((slot) => ({
         day_id: parseInt(slot.day),
@@ -267,7 +284,7 @@ const AddBatch = () => {
           rm_id: parseInt(formData.rmId) || null,
           no_student: parseInt(formData.batchLimit) || null,
           coach_id: parseInt(formData.coachId) || null,
-          start_date: formData.startDate || "",
+          start_date: finalStartDate,
           end_date: formData.endDate || "",
           class: slots.map((slot) => ({
             day: parseInt(slot.day) || null,
@@ -298,13 +315,10 @@ const AddBatch = () => {
     });
   };
 
-  const handleBlur = (value) => {
-    const isValid = /^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM)$/i.test(value);
-    if (!isValid) {
-      alert("Invalid time. Use format hh:mm AM/PM (e.g., 08:45 PM)");
-    }
+  const getDayAvailability = (dayId) => {
+    if (!daysData?.data || !dayId) return null;
+    return daysData.data.find((day) => day.day_id === parseInt(dayId));
   };
-
   return (
     <div>
       <ToastContainer />
@@ -618,6 +632,7 @@ const AddBatch = () => {
               <h2 className="text-xl font-semibold">Batch Timings</h2>
             </div>
             {slots.map((slot, index) => {
+              const selectedDayData = getDayAvailability(slot.day);
               return (
                 <>
                   <div className="flex gap-8" key={index}>
@@ -634,9 +649,9 @@ const AddBatch = () => {
                           }
                         >
                           <option>Select Day</option>
-                          {daysData?.results?.map((days) => (
-                            <option key={days?.id} value={days?.id}>
-                              {days?.day}
+                          {daysData?.data?.map((days) => (
+                            <option key={days?.day_id} value={days?.day_id}>
+                              {days?.day_name}
                             </option>
                           ))}
                         </Select>
@@ -731,6 +746,43 @@ const AddBatch = () => {
                       )}
                     </div>
                   </div>
+                  {selectedDayData && (
+                    <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                      <h4 className="font-semibold text-gray-700 mb-2">
+                        Coach Availability for {selectedDayData.day_name}:
+                      </h4>
+                      <div className="mb-3">
+                        <span className="font-medium text-green-600">
+                          Available Time:{" "}
+                        </span>
+                        <span className="text-gray-600">
+                          {selectedDayData.available_time?.start_time} -{" "}
+                          {selectedDayData.available_time?.end_time}
+                        </span>
+                      </div>
+                      {selectedDayData.breaks &&
+                        selectedDayData.breaks.length > 0 && (
+                          <div>
+                            <span className="font-medium text-orange-600">
+                              Break Times:{" "}
+                            </span>
+                            <div className="text-gray-600">
+                              {selectedDayData.breaks.map(
+                                (breakTime, breakIndex) => (
+                                  <span
+                                    key={breakIndex}
+                                    className="inline-block mr-4"
+                                  >
+                                    {breakTime.start_time} -{" "}
+                                    {breakTime.end_time}
+                                  </span>
+                                )
+                              )}
+                            </div>
+                          </div>
+                        )}
+                    </div>
+                  )}
                 </>
               );
             })}

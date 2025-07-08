@@ -87,30 +87,30 @@ const BatchDetails = () => {
       valueFormatter: (params) =>
         formatTime(params.value, params.data?.end_time_am),
     },
-    {
-      headerName: "Coach",
-      valueGetter: (params) =>
-        params.data?.Coach
-          ? `${params.data.Coach.f_name} ${params.data.Coach.l_name}`
-          : "N/A",
-      sortable: true,
-      filter: true,
-      width: 180,
-    },
-    {
-      headerName: "Coach Email",
-      valueGetter: (params) => params.data?.Coach?.email || "N/A",
-      sortable: true,
-      filter: true,
-      width: 200,
-    },
-    {
-      headerName: "Coach Mobile",
-      valueGetter: (params) => params.data?.Coach?.mobile || "N/A",
-      sortable: true,
-      filter: true,
-      width: 150,
-    },
+    // {
+    //   headerName: "Coach",
+    //   valueGetter: (params) =>
+    //     params.data?.Coach
+    //       ? `${params.data.Coach.f_name} ${params.data.Coach.l_name}`
+    //       : "N/A",
+    //   sortable: true,
+    //   filter: true,
+    //   width: 180,
+    // },
+    // {
+    //   headerName: "Coach Email",
+    //   valueGetter: (params) => params.data?.Coach?.email || "N/A",
+    //   sortable: true,
+    //   filter: true,
+    //   width: 200,
+    // },
+    // {
+    //   headerName: "Coach Mobile",
+    //   valueGetter: (params) => params.data?.Coach?.mobile || "N/A",
+    //   sortable: true,
+    //   filter: true,
+    //   width: 150,
+    // },
     {
       headerName: "Meeting Link",
       field: "link",
@@ -194,16 +194,16 @@ const BatchDetails = () => {
       valueFormatter: (params) =>
         formatTime(params.value, params.data?.end_time_am),
     },
-    {
-      headerName: "Coach",
-      valueGetter: (params) =>
-        params.data?.Coach
-          ? `${params.data.Coach.f_name} ${params.data.Coach.l_name}`
-          : "N/A",
-      sortable: true,
-      filter: true,
-      width: 180,
-    },
+    // {
+    //   headerName: "Coach",
+    //   valueGetter: (params) =>
+    //     params.data?.Coach
+    //       ? `${params.data.Coach.f_name} ${params.data.Coach.l_name}`
+    //       : "N/A",
+    //   sortable: true,
+    //   filter: true,
+    //   width: 180,
+    // },
     {
       headerName: "Status",
       field: "status",
@@ -341,7 +341,9 @@ const BatchDetails = () => {
                   <div className="mb-1 block">
                     <Label value="Relationship Manager" />
                   </div>
-                  <p className="text-[#8E8E8E] text-sm">N/A</p>
+                  <p className="text-[#8E8E8E] text-sm">
+                    {batchData?.Oh?.f_name} {batchData?.Oh?.l_name}
+                  </p>
                 </div>
                 <div className="w-6/12">
                   <div className="mb-1 block">
@@ -366,7 +368,7 @@ const BatchDetails = () => {
                     <Label value="Country" />
                   </div>
                   <p className="text-[#8E8E8E] text-sm">
-                    {batchData?.country_id}
+                    {batchData?.Country?.country_name}
                   </p>
                 </div>
                 <div className="w-6/12">
