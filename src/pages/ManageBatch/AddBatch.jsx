@@ -298,6 +298,13 @@ const AddBatch = () => {
     });
   };
 
+  const handleBlur = (value) => {
+    const isValid = /^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM)$/i.test(value);
+    if (!isValid) {
+      alert("Invalid time. Use format hh:mm AM/PM (e.g., 08:45 PM)");
+    }
+  };
+
   return (
     <div>
       <ToastContainer />
@@ -643,16 +650,18 @@ const AddBatch = () => {
                             <TextInput
                               type="time"
                               placeholder="Enter Start Time"
-                              required
+                              // type="text"
+                              // placeholder="Enter Start Time (hh:mm AM/PM)"
                               value={slot.startTime}
                               onChange={(e) =>
                                 handleChange(index, "startTime", e.target.value)
                               }
+                              // onBlur={(e) => handleBlur(e.target.value)}
+                              // maxLength={8}
                             />
                           </div>
                           <div className="w-4/12">
                             <Select
-                              required
                               value={slot.startMeridian}
                               onChange={(e) =>
                                 handleChange(

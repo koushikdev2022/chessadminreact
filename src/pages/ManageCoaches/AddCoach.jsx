@@ -93,8 +93,13 @@ const AddCoach = () => {
     const newEndTime = field === "endTime" ? value : endTime;
 
     if (newStartTime && newEndTime) {
-      dispatch(checkCoachBreakTimeDiff({ start_time: newStartTime, end_time: newEndTime })).then((res) => {
-        console.log("check break time res", res)
+      dispatch(
+        checkCoachBreakTimeDiff({
+          start_time: newStartTime,
+          end_time: newEndTime,
+        })
+      ).then((res) => {
+        console.log("check break time res", res);
         if (res?.payload?.status_code === 200) {
           setBreaks(updated);
         } else {
@@ -103,7 +108,7 @@ const AddCoach = () => {
           rollback[index][field] = "";
           setBreaks(rollback);
         }
-      })
+      });
     }
   };
 
@@ -191,8 +196,13 @@ const AddCoach = () => {
       formData.append("certificate_files", file);
     });
 
-    dispatch(checkCoachTimes({ shift_timings: formattedShifts, break_timings: formattedBreaks })).then((res) => {
-      console.log("check coach time", res)
+    dispatch(
+      checkCoachTimes({
+        shift_timings: formattedShifts,
+        break_timings: formattedBreaks,
+      })
+    ).then((res) => {
+      console.log("check coach time", res);
       const data = res?.payload?.res;
 
       if (!Array.isArray(data)) {
@@ -200,17 +210,22 @@ const AddCoach = () => {
         return;
       }
 
-      const invalidItems = data.filter(item => item.isValid === false);
+      const invalidItems = data.filter((item) => item.isValid === false);
       if (invalidItems.length > 0) {
-        const errorMessages = invalidItems.map(item => {
+        const errorMessages = invalidItems.map((item) => {
           const breakInfo = `Break on ${item.break.day} (${item.break.start_time} - ${item.break.end_time})`;
-          const shiftInfo = item.shifts.map(shift =>
-            `Shift on ${shift.day} (${shift.start_time} - ${shift.end_time})`
-          ).join(", ");
+          const shiftInfo = item.shifts
+            .map(
+              (shift) =>
+                `Shift on ${shift.day} (${shift.start_time} - ${shift.end_time})`
+            )
+            .join(", ");
           return `${breakInfo} conflicts with ${shiftInfo}`;
         });
 
-        toast.error("Invalid Timings:\n" + errorMessages.join("\n"), { autoClose: false });
+        toast.error("Invalid Timings:\n" + errorMessages.join("\n"), {
+          autoClose: false,
+        });
       } else {
         dispatch(addCoach(formData)).then((res) => {
           console.log("Res", res);
@@ -236,13 +251,10 @@ const AddCoach = () => {
                 { autoClose: false }
               );
             }
-          } else (
-            toast.error(res?.payload?.response?.data?.message)
-          )
+          } else toast.error(res?.payload?.response?.data?.message);
         });
       }
-
-    })
+    });
 
     // dispatch(addCoach(formData)).then((res) => {
     //   console.log("Res", res);
@@ -775,7 +787,7 @@ const AddCoach = () => {
                     <div>
                       <Button
                         onClick={handleCancel}
-                        className="bg-[#e3e3ea] hover:bg-[#1a1a33] px-6 py-2 text-black text-base font-semibold flex justify-center items-center rounded-md border border-[#090722]"
+                        className="bg-[#e3e3ea] hover:bg-[#1a1a33] px-6 py-1 text-black text-base font-semibold flex justify-center items-center rounded-md border border-[#090722]"
                       >
                         Cancel
                       </Button>
@@ -783,7 +795,8 @@ const AddCoach = () => {
                     <div className="mb-4">
                       <Button
                         type="submit"
-                        className="bg-[#090722] hover:bg-black px-6 py-2 text-white text-base font-semibold flex justify-center items-center rounded-md"
+                        // className="bg-[#090722] hover:bg-black px-6 py-2 text-white text-base font-semibold flex justify-center items-center rounded-md"
+                        className="bg-[#52b69a] hover:bg-black px-6 py-1 text-white text-base font-semibold flex justify-center items-center rounded-md"
                       >
                         Register Account
                       </Button>

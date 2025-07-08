@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { ohBatchList } from "../../Reducer/BatchSlice";
+import userRoles from "../utils/userRoles";
 
 const ManageBatch = () => {
   const { batchList } = useSelector((state) => state?.batch);
@@ -125,7 +126,7 @@ const ManageBatch = () => {
       state: { batch_id: id },
     });
   };
-
+  const currentUserRole = userRoles();
   return (
     <div>
       <ToastContainer />
@@ -133,12 +134,16 @@ const ManageBatch = () => {
         <div className="h-full lg:h-screen">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-semibold">Mange Batches</h2>
-            <Button
-              onClick={() => handleAddBatch()}
-              className="bg-[#52b69a] hover:bg-black px-4 py-1 text-white text-base font-semibold flex justify-center items-center rounded-md"
-            >
-              Add New Batch
-            </Button>
+            {currentUserRole === "OH" && (
+              <>
+                <Button
+                  onClick={() => handleAddBatch()}
+                  className="bg-[#52b69a] hover:bg-black px-4 py-1 text-white text-base font-semibold flex justify-center items-center rounded-md"
+                >
+                  Add New Batch
+                </Button>
+              </>
+            )}
           </div>
           <div
             className="ag-theme-alpine"

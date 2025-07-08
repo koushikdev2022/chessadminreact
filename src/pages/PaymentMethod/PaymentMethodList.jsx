@@ -181,7 +181,7 @@ const PaymentMethodList = () => {
           <div className="h-full lg:h-screen">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-semibold">Payment Method</h2>
-              {currentUserRole === "SA" && (
+              {/* {currentUserRole === "SA" && (
                 <>
                   <Button
                     onClick={() => handleAddPaymentMethod()}
@@ -190,7 +190,7 @@ const PaymentMethodList = () => {
                     Add Payment Method
                   </Button>
                 </>
-              )}
+              )} */}
             </div>
 
             <div

@@ -173,7 +173,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     :
                     <>
                       <MdFamilyRestroom className='text-xl' />
-                      Manage Parents
+                      Manage User
                     </>
                   }
                 </NavLink>
@@ -198,7 +198,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   }
                 </NavLink>
               </li>
-
+              {
+                currentUserRole==='SA'&&(
+                  <>
               <li>
                 <NavLink
                   to="/manage-courses"
@@ -218,7 +220,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   }
                 </NavLink>
               </li>
-
+                 </>
+                )
+              }
+              {
+                currentUserRole==='SA'&&(
+                  <>
               <li>
                 <NavLink
                   to="/manage-roles"
@@ -238,6 +245,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   }
                 </NavLink>
               </li>
+                 </>
+                )
+              }
 
               {
                 currentUserRole === 'SA' && (

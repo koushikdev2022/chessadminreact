@@ -1535,7 +1535,8 @@ const ManageCoaches = () => {
               <>
                 <Button
                   onClick={() => handleAddCoach()}
-                  className="bg-[#090722] hover:bg-black px-6 py-2 text-white text-base font-semibold flex justify-center items-center rounded-md"
+                  // className="bg-[#090722] hover:bg-black px-6 py-2 text-white text-base font-semibold flex justify-center items-center rounded-md"
+                  className="bg-[#52b69a] hover:bg-black px-4 py-1 text-white text-base font-semibold flex justify-center items-center rounded-md"
                 >
                   Register New Coach Account
                 </Button>

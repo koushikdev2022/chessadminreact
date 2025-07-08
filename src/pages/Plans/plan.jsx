@@ -190,13 +190,13 @@ const Plan = () => {
         <div className="h-full lg:h-screen">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-semibold">Plan Details</h2>
-            <button
+            {/* <button
               type="button"
               onClick={() => handleCreatePlan()}
               className="bg-[#52b69a] hover:bg-black px-6 py-2.5 text-white text-sm font-semibold flex justify-center items-center rounded-md"
             >
               Add Plans
-            </button>
+            </button> */}
           </div>
           <div
             className="plan_tab_area"

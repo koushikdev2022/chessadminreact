@@ -46,12 +46,12 @@ const ManageParents = () => {
       <div className="wrapper_area my-0 mx-auto p-6 rounded-xl bg-white">
         <div className="h-full lg:h-screen">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-semibold">Parent Details</h2>
+            <h2 className="text-2xl font-semibold">User Details</h2>
             <Button
               onClick={() => setOpenModal(true)}
               className="bg-[#52b69a] hover:bg-black px-4 py-1 text-white text-base font-semibold flex justify-center items-center rounded-md"
             >
-              Add Parent
+              Add User
             </Button>
           </div>
           <div
