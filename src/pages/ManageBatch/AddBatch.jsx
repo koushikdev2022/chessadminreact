@@ -648,6 +648,7 @@ const AddBatch = () => {
                         <div className="flex gap-2">
                           <div className="w-8/12">
                             <TextInput
+                              className="no-time-picker"
                               type="time"
                               placeholder="Enter Start Time"
                               // type="text"
