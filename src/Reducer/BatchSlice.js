@@ -169,6 +169,48 @@ export const getDaysCoach = createAsyncThunk(
 
 )
 
+export const getStudentList = createAsyncThunk(
+    'getStudentList',
+    async (user_input, { rejectWithValue }) => {
+        try {
+            const response = await api.post('/student/students/list', user_input);
+            if (response?.data?.status_code === 200) {
+                return response.data;
+            } else {
+                if (response?.data?.errors) {
+                    return rejectWithValue(response.data.errors);
+                } else {
+                    return rejectWithValue('Something went wrong.');
+                }
+            }
+        } catch (err) {
+            return rejectWithValue(err);
+        }
+    }
+
+)
+
+export const addStudent = createAsyncThunk(
+    'addStudent',
+    async (user_input, { rejectWithValue }) => {
+        try {
+            const response = await api.post('/oparational-head/batch/add-student', user_input);
+            if (response?.data?.status_code === 201) {
+                return response.data;
+            } else {
+                if (response?.data?.errors) {
+                    return rejectWithValue(response.data.errors);
+                } else {
+                    return rejectWithValue('Something went wrong.');
+                }
+            }
+        } catch (err) {
+            return rejectWithValue(err);
+        }
+    }
+
+)
+
 
 
 const initialState = {
@@ -182,7 +224,9 @@ const initialState = {
     validateData: [],
     coachDetailsData: [],
     bannerImageData: {},
-    daysData: []
+    daysData: [],
+    studentData: [],
+    addStudentData: {}
 
 };
 
@@ -285,6 +329,30 @@ const BatchSlice = createSlice(
                     state.error = false
                 })
                 .addCase(getDaysCoach.rejected, (state, { payload }) => {
+                    state.loading = false
+                    state.error = payload
+                })
+                .addCase(getStudentList.pending, (state) => {
+                    state.loading = true
+                })
+                .addCase(getStudentList.fulfilled, (state, { payload }) => {
+                    state.loading = false
+                    state.studentData = payload
+                    state.error = false
+                })
+                .addCase(getStudentList.rejected, (state, { payload }) => {
+                    state.loading = false
+                    state.error = payload
+                })
+                .addCase(addStudent.pending, (state) => {
+                    state.loading = true
+                })
+                .addCase(addStudent.fulfilled, (state, { payload }) => {
+                    state.loading = false
+                    state.addStudentData = payload
+                    state.error = false
+                })
+                .addCase(addStudent.rejected, (state, { payload }) => {
                     state.loading = false
                     state.error = payload
                 })

@@ -236,6 +236,85 @@ const BatchDetails = () => {
         ),
     },
   ];
+  const getStudentColumnDefs = () => [
+    // {
+    //   headerName: "Student ID",
+    //   field: "id",
+    //   sortable: true,
+    //   filter: true,
+    //   width: 120,
+    // },
+    {
+      headerName: "First Name",
+      field: "f_name",
+      sortable: true,
+      filter: true,
+      width: 150,
+    },
+    {
+      headerName: "Last Name",
+      field: "l_name",
+      sortable: true,
+      filter: true,
+      width: 150,
+    },
+    // {
+    //   headerName: "Full Name",
+    //   valueGetter: (params) =>
+    //     `${params.data?.f_name || ""} ${params.data?.l_name || ""}`.trim() ||
+    //     "N/A",
+    //   sortable: true,
+    //   filter: true,
+    //   width: 200,
+    // },
+    {
+      headerName: "Username",
+      field: "username",
+      sortable: true,
+      filter: true,
+      width: 150,
+    },
+    {
+      headerName: "Email",
+      field: "email",
+      sortable: true,
+      filter: true,
+      width: 200,
+    },
+    {
+      headerName: "Mobile",
+      field: "mobile",
+      sortable: true,
+      filter: true,
+      width: 150,
+    },
+    {
+      headerName: "Status",
+      field: "status",
+      sortable: true,
+      filter: true,
+      width: 120,
+      cellRenderer: (params) =>
+        params.value === 1 ? (
+          <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+            Active
+          </span>
+        ) : (
+          <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+            Inactive
+          </span>
+        ),
+    },
+    {
+      headerName: "Joined Date",
+      valueGetter: (params) =>
+        params.data?.UserBatchMap?.created_at || params.data?.created_at,
+      sortable: true,
+      filter: true,
+      width: 150,
+      valueFormatter: (params) => formatDate(params.value),
+    },
+  ];
 
   // Default column properties
   const defaultColDef = useMemo(
@@ -263,8 +342,10 @@ const BatchDetails = () => {
   const sessionsData = batchData?.BatchTime || [];
   const clashData = batchData?.BatchTimeClash || [];
   const completedData = batchData?.BatchTimeComplete || [];
+  const studentsData = batchData?.User || [];
   const baseColumnDefs = useMemo(() => getBaseColumnDefs(), [activeTab]);
   const completedColumnDefs = useMemo(() => getCompletedColumnDefs(), []);
+  const studentColumnDefs = useMemo(() => getStudentColumnDefs(), []);
   // Get current tab data and columns
   // const getCurrentTabData = () => {
   //   console.log("activeTab", activeTab);
@@ -289,6 +370,8 @@ const BatchDetails = () => {
         return { data: clashData, columns: baseColumnDefs };
       case "completed":
         return { data: completedData, columns: completedColumnDefs };
+      case "students":
+        return { data: studentsData, columns: studentColumnDefs };
       default:
         return { data: sessionsData, columns: baseColumnDefs };
     }
@@ -316,6 +399,12 @@ const BatchDetails = () => {
       label: "Batch Completed",
       count: completedData.length,
       color: "green",
+    },
+    {
+      key: "students",
+      label: "Students",
+      count: studentsData.length,
+      color: "purple",
     },
   ];
 

@@ -11,11 +11,16 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { ohBatchList } from "../../Reducer/BatchSlice";
 import userRoles from "../utils/userRoles";
+import StudentAddModal from "./StudentAddModal";
 
 const ManageBatch = () => {
   const { batchList } = useSelector((state) => state?.batch);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const currentUserRole = userRoles();
+  const [openStudentModal, setOpenStudentModal] = useState(false);
+  const [batchId, setBatchId] = useState();
+
   useEffect(() => {
     dispatch(ohBatchList());
   }, []);
@@ -36,27 +41,96 @@ const ManageBatch = () => {
     }));
   }, [batchList]);
 
-  const columnDefs = useMemo(
-    () => [
+  // const columnDefs = useMemo(
+  //   () => [
+  //     {
+  //       field: "name",
+  //       headerName: "Batch Name",
+  //       sortable: true,
+  //       filter: true,
+  //     },
+  //     // {
+  //     //   field: "student",
+  //     //   headerName: "Batch Students",
+  //     //   sortable: true,
+  //     //   filter: true,
+  //     //   flex: 2,
+  //     // },
+  //     // {
+  //     //   field: "country",
+  //     //   headerName: "Country",
+  //     //   sortable: true,
+  //     //   filter: true,
+  //     // },
+  //     {
+  //       field: "limit",
+  //       headerName: "Batch Limit",
+  //       sortable: true,
+  //       filter: true,
+  //     },
+  //     {
+  //       field: "coach",
+  //       headerName: "Batch Coach",
+  //       sortable: true,
+  //       filter: true,
+  //     },
+  //     {
+  //       field: "manager",
+  //       headerName: "Relationship Manager",
+  //       sortable: true,
+  //       filter: true,
+  //     },
+  //     // {
+  //     //   headerName: "Actions",
+  //     //   field: "actions",
+  //     //   cellRenderer: (params) => (
+  //     //     <div className="flex gap-2">
+  //     //       <Button size="xs">
+  //     //         <BiSolidMessageSquareEdit className="text-[#34A0A4] hover:text-black text-xl" />
+  //     //       </Button>
+  //     //       <Button size="xs">
+  //     //         <MdDelete className="text-[#F94141] hover:text-[#ff0000] text-xl" />
+  //     //       </Button>
+  //     //     </div>
+  //     //   ),
+  //     // },
+  //     {
+  //       headerName: "Details",
+  //       field: "details",
+  //       cellRenderer: (params) => (
+  //         <Button
+  //           onClick={() => handleBatchDetails(params?.data?.id)}
+  //           className="border text-[#52b69a] border-[#52b69a] bg-white hover:bg-[#52b69a] hover:text-white text-sm px-4 py-1"
+  //         >
+  //           Details
+  //         </Button>
+  //       ),
+  //     },
+  //     {
+  //       headerName: "Action",
+  //       field: "action",
+
+  //       cellRenderer: (params) => (
+  //         <Button
+  //           onClick={() => handleBatchDetails(params?.data?.id)}
+  //           className="border text-[#52b69a] border-[#52b69a] bg-white hover:bg-[#52b69a] hover:text-white text-sm px-4 py-1"
+  //         >
+  //           Add Student
+  //         </Button>
+  //       ),
+  //     },
+  //   ],
+  //   []
+  // );
+
+  const columnDefs = useMemo(() => {
+    const columns = [
       {
         field: "name",
         headerName: "Batch Name",
         sortable: true,
         filter: true,
       },
-      // {
-      //   field: "student",
-      //   headerName: "Batch Students",
-      //   sortable: true,
-      //   filter: true,
-      //   flex: 2,
-      // },
-      // {
-      //   field: "country",
-      //   headerName: "Country",
-      //   sortable: true,
-      //   filter: true,
-      // },
       {
         field: "limit",
         headerName: "Batch Limit",
@@ -75,20 +149,6 @@ const ManageBatch = () => {
         sortable: true,
         filter: true,
       },
-      // {
-      //   headerName: "Actions",
-      //   field: "actions",
-      //   cellRenderer: (params) => (
-      //     <div className="flex gap-2">
-      //       <Button size="xs">
-      //         <BiSolidMessageSquareEdit className="text-[#34A0A4] hover:text-black text-xl" />
-      //       </Button>
-      //       <Button size="xs">
-      //         <MdDelete className="text-[#F94141] hover:text-[#ff0000] text-xl" />
-      //       </Button>
-      //     </div>
-      //   ),
-      // },
       {
         headerName: "Details",
         field: "details",
@@ -101,21 +161,26 @@ const ManageBatch = () => {
           </Button>
         ),
       },
-      {
+    ];
+
+    // Add the "Add Student" column only for OH users
+    if (currentUserRole === "OH") {
+      columns.push({
         headerName: "Action",
         field: "action",
         cellRenderer: (params) => (
           <Button
-            onClick={() => handleBatchDetails(params?.data?.id)}
+            onClick={() => handleAddStudent(params?.data?.id)}
             className="border text-[#52b69a] border-[#52b69a] bg-white hover:bg-[#52b69a] hover:text-white text-sm px-4 py-1"
           >
             Add Student
           </Button>
         ),
-      },
-    ],
-    []
-  );
+      });
+    }
+
+    return columns;
+  }, [currentUserRole]); // Make sure to add userType as a dependency
 
   const handleAddBatch = () => {
     navigate("/add-batch");
@@ -126,7 +191,11 @@ const ManageBatch = () => {
       state: { batch_id: id },
     });
   };
-  const currentUserRole = userRoles();
+  const handleAddStudent = (id) => {
+    setOpenStudentModal(true);
+    setBatchId(id);
+  };
+
   return (
     <div>
       <ToastContainer />
@@ -158,6 +227,13 @@ const ManageBatch = () => {
             />
           </div>
         </div>
+        {openStudentModal && (
+          <StudentAddModal
+            openStudentModal={openStudentModal}
+            setOpenStudentModal={setOpenStudentModal}
+            batchId={batchId}
+          />
+        )}
       </div>
     </div>
   );
